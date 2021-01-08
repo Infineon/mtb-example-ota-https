@@ -1,0 +1,14 @@
+{
+  "Message":"Update Available",
+  "Manufacturer":"Infineon",
+  "ManufacturerId":"ABC",
+  "Product":"PSoC 6",
+  "SerialNumber":"ABC213450001",
+  "Board":"CY8CPROTO_062_4343W",
+  "Version":"1.0.0",
+  "Connection":"HTTPS",
+  "Server":"192.168.0.10",
+  "Port":"4443",
+  "File":"/mtb-example-anycloud-ota-http.bin",
+  "UniqueTopicName":"replace"
+}
