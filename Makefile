@@ -7,7 +7,7 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2020 Cypress Semiconductor Corporation
+# Copyright 2018-2021 Cypress Semiconductor Corporation
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -192,26 +192,26 @@ ifeq ($(OTA_SUPPORT),1)
     # Must be a multiple of 1024 (must leave __vectors on a 1k boundary)
     MCUBOOT_HEADER_SIZE=0x400
     ifeq ($(OTA_USE_EXTERNAL_FLASH),1)
-        MCUBOOT_MAX_IMG_SECTORS=2048
-        CY_BOOT_SCRATCH_SIZE=0x00010000
+        MCUBOOT_MAX_IMG_SECTORS=3584
+        CY_BOOT_SCRATCH_SIZE=0x00004000
         # Boot loader size defines for mcuboot & app are different, but value is the same
         MCUBOOT_BOOTLOADER_SIZE=0x00018000
         CY_BOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE)
         # Primary Slot Currently follows Bootloader sequentially
         CY_BOOT_PRIMARY_1_START=0x00018000
-        CY_BOOT_PRIMARY_1_SIZE=0x00100000
-        CY_BOOT_SECONDARY_1_SIZE=0x00100000
+        CY_BOOT_PRIMARY_1_SIZE=0x001C0000
+        CY_BOOT_SECONDARY_1_SIZE=0x001C0000
         CY_FLASH_ERASE_VALUE=0xFF
     else
         MCUBOOT_MAX_IMG_SECTORS=2000
-        CY_BOOT_SCRATCH_SIZE=0x00010000
+        CY_BOOT_SCRATCH_SIZE=0x00004000
         # Boot loader size defines for mcuboot & app are different, but value is the same
         MCUBOOT_BOOTLOADER_SIZE=0x00018000
         CY_BOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE)
         # Primary Slot Currently follows Bootloader sequentially
         CY_BOOT_PRIMARY_1_START=0x00018000
-        CY_BOOT_PRIMARY_1_SIZE=0x000EE000
-        CY_BOOT_SECONDARY_1_SIZE=0x000EE000
+        CY_BOOT_PRIMARY_1_SIZE=0x000F0000
+        CY_BOOT_SECONDARY_1_SIZE=0x000F0000
         CY_FLASH_ERASE_VALUE=0x00
     endif
 

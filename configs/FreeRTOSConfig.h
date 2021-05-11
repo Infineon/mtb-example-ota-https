@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Cypress Semiconductor Corporation. or a subsidiary of
+ * Copyright (C) 2020-2021 Cypress Semiconductor Corporation. or a subsidiary of
  * Cypress Semiconductor Corporation.  All Rights Reserved.
  *
  * Updated configuration to support PSoC 6 MCU.
