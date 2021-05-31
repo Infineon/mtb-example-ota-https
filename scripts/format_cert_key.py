@@ -1,3 +1,11 @@
+# Python script to convert certificate/key file to string format that can be used in C source files.
+#
+# Usage:
+#   python format_cert_key.py <one-or-more-file-name-of-certificate-or-key-with-extension>
+#
+# Example:
+#   python format_cert_key.py mosquitto_ca.crt mosquitto_client.crt mosquitto_client.key
+#
 import sys
 
 #Function that adds a new line character and trailing backslash except on the final line
@@ -26,7 +34,7 @@ if __name__ == '__main__':
             if (arg.endswith(".py") == False):
                 print("Pass file with extension (*.crt) (*.pem) or (*.key) only!")
             
-    input()
+    input("Enter any key to exit...")
 
 
 

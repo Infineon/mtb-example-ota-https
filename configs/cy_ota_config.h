@@ -1,19 +1,7 @@
-/*
- * Copyright 2020-2021 Cypress Semiconductor Corporation
- * SPDX-License-Identifier: Apache-2.0
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*******************************************************************************
+ *\copyright
+ *$ Copyright 2020-YEAR Cypress Semiconductor Apache2 $
+ *******************************************************************************/
 
 /**
  * \addtogroup group_cy_ota Cypress Over The Air (OTA) API
@@ -113,6 +101,17 @@ extern "C" {
  */
 #define CY_OTA_MAX_DOWNLOAD_TRIES           (3)             /* 3 download OTA Image retries */
 
+/**
+ * @brief HTTP timeout for receiving messages
+ *
+ */
+#define CY_OTA_HTTP_TIMEOUT_RECEIVE         (5000)          /* 5 second receive timeout. */
+
+/**
+ * @brief HTTP timeout for sending messages
+ *
+ */
+#define CY_OTA_HTTP_TIMEOUT_SEND            (3000)          /* 3 second send timeout. */
 /**********************************************************************
  * Message Defines
  **********************************************************************/
@@ -134,12 +133,12 @@ extern "C" {
  * Topic for Device to send message to Publisher:
  *  "COMPANY_TOPIC_PREPEND / BOARD_NAME / PUBLISHER_LISTEN_TOPIC"
  */
-#define COMPANY_TOPIC_PREPEND               "anycloud"
+#define COMPANY_TOPIC_PREPEND               "MyUniqueTopic"
 
 /**
  * @brief End of Topic to send message to Publisher for Direct download
  */
-#define PUBLISHER_DIRECT_TOPIC               "OTAImage"
+#define PUBLISHER_DIRECT_TOPIC              "OTAImage"
 
 /**
  * @brief Update Successful message
@@ -163,9 +162,9 @@ extern "C" {
 #define CY_OTA_SUBSCRIBE_UPDATES_AVAIL \
 "{\
 \"Message\":\"Update Availability\", \
-\"Manufacturer\": \"Express Widgits Corporation\", \
-\"ManufacturerID\": \"EWCO\", \
-\"ProductID\": \"Easy Widgit\", \
+\"Manufacturer\": \"Infineon\", \
+\"ManufacturerID\": \"ABCD123\", \
+\"ProductID\": \"EFGH456\", \
 \"SerialNumber\": \"ABC213450001\", \
 \"BoardName\": \"CY8CPROTO_062_4343W\", \
 \"Version\": \"%d.%d.%d\", \
@@ -181,9 +180,9 @@ extern "C" {
 #define CY_OTA_DOWNLOAD_REQUEST \
 "{\
 \"Message\":\"Request Update\", \
-\"Manufacturer\": \"Express Widgits Corporation\", \
-\"ManufacturerID\": \"EWCO\", \
-\"ProductID\": \"Easy Widgit\", \
+\"Manufacturer\": \"Infineon\", \
+\"ManufacturerID\": \"ABCD123\", \
+\"ProductID\": \"EFGH456\", \
 \"SerialNumber\": \"ABC213450001\", \
 \"BoardName\": \"CY8CPROTO_062_4343W\", \
 \"Version\": \"%d.%d.%d\", \
@@ -199,9 +198,9 @@ extern "C" {
 #define CY_OTA_DOWNLOAD_DIRECT_REQUEST \
 "{\
 \"Message\":\"Send Direct Update\", \
-\"Manufacturer\": \"Express Widgits Corporation\", \
-\"ManufacturerID\": \"EWCO\", \
-\"ProductID\": \"Easy Widgit\", \
+\"Manufacturer\": \"Infineon\", \
+\"ManufacturerID\": \"ABCD123\", \
+\"ProductID\": \"EFGH456\", \
 \"SerialNumber\": \"ABC213450001\", \
 \"BoardName\": \"CY8CPROTO_062_4343W\", \
 \"Version\": \"%d.%d.%d\" \

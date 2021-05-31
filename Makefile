@@ -7,15 +7,15 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2021 Cypress Semiconductor Corporation
+# Copyright 2018-2021, Cypress Semiconductor Corporation (an Infineon company)
 # SPDX-License-Identifier: Apache-2.0
-#
+# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
+# 
 #     http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,10 +28,12 @@
 # Basic Configuration
 ################################################################################
 
+-include ./libs/mtb.mk 
+
 # Target board/hardware (BSP).
-# To change the target, it is recommended to use the Library manager 
-# ('make modlibs' from command line), which will also update Eclipse IDE launch 
-# configurations. If TARGET is manually edited, ensure TARGET_<BSP>.mtb with a 
+# To change the target, it is recommended to use the Library manager
+# ('make modlibs' from command line), which will also update Eclipse IDE launch
+# configurations. If TARGET is manually edited, ensure TARGET_<BSP>.mtb with a
 # valid URL exists in the application, run 'make getlibs' to fetch BSP contents
 # and update or regenerate launch configurations for your IDE.
 TARGET=CY8CPROTO-062-4343W
@@ -43,8 +45,8 @@ TARGET_UNDERSCORE=$(subst -,_,$(TARGET))
 CORE?=CM4
 
 # Name of application (used to derive name of final linked file).
-# 
-# If APPNAME is edited, ensure to update or regenerate launch 
+#
+# If APPNAME is edited, ensure to update or regenerate launch
 # configurations for your IDE.
 APPNAME=mtb-example-anycloud-ota-https
 
@@ -62,8 +64,8 @@ TOOLCHAIN=GCC_ARM
 # Debug -- build with minimal optimizations, focus on debugging.
 # Release -- build with full optimizations
 # Custom -- build with custom configuration, set the optimization flag in CFLAGS
-# 
-# If CONFIG is manually edited, ensure to update or regenerate launch configurations 
+#
+# If CONFIG is manually edited, ensure to update or regenerate launch configurations
 # for your IDE.
 CONFIG=Debug
 
@@ -76,6 +78,7 @@ OTA_SUPPORT=1
 
 # Set to 1 to add OTA external Flash support.
 OTA_USE_EXTERNAL_FLASH?=1
+
 ################################################################################
 # Advanced Configuration
 ################################################################################
@@ -90,7 +93,7 @@ OTA_USE_EXTERNAL_FLASH?=1
 # ... then code in directories named COMPONENT_foo and COMPONENT_bar will be
 # added to the build
 #
-COMPONENTS=FREERTOS LWIP MBEDTLS
+COMPONENTS=FREERTOS LWIP MBEDTLS SECURE_SOCKETS OTA_HTTP
 
 # Like COMPONENTS, but disable optional code that was enabled by default.
 DISABLE_COMPONENTS=
@@ -109,8 +112,15 @@ INCLUDES=./configs
 MBEDTLSFLAGS = MBEDTLS_USER_CONFIG_FILE='"configs/mbedtls_user_config.h"'
 
 # Add additional defines to the build process (without a leading -D).
-DEFINES=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF
+DEFINES=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF 
 DEFINES+=CY_RTOS_AWARE
+
+# Set user agent name in all request headers with the specified name
+DEFINES += HTTP_USER_AGENT_VALUE="\"anycloud-http-client\""
+# Configure response header maximum length with the specified value - HTTP
+DEFINES += HTTP_MAX_RESPONSE_HEADERS_SIZE_BYTES=2048
+# Disable custom config header file
+DEFINES += HTTP_DO_NOT_USE_CUSTOM_CONFIG
 
 # CY8CPROTO-062-4343W board shares the same GPIO for the user button (SW2)
 # and the CYW4343W host wake up pin. Since this example uses the GPIO for
@@ -118,6 +128,10 @@ DEFINES+=CY_RTOS_AWARE
 # disabled by setting CY_WIFI_HOST_WAKE_SW_FORCE to '0'.
 ifeq ($(TARGET), CY8CPROTO-062-4343W)
 DEFINES+=CY_WIFI_HOST_WAKE_SW_FORCE=0
+endif
+
+ifeq ($(OTA_USE_EXTERNAL_FLASH),1)
+DEFINES+=CY_BOOT_USE_EXTERNAL_FLASH=1
 endif
 
 # Select softfp or hardfp floating point. Default is softfp.
@@ -200,6 +214,7 @@ ifeq ($(OTA_SUPPORT),1)
         # Primary Slot Currently follows Bootloader sequentially
         CY_BOOT_PRIMARY_1_START=0x00018000
         CY_BOOT_PRIMARY_1_SIZE=0x001C0000
+        CY_BOOT_SECONDARY_1_START=0x00000000       
         CY_BOOT_SECONDARY_1_SIZE=0x001C0000
         CY_FLASH_ERASE_VALUE=0xFF
     else
@@ -221,7 +236,6 @@ ifeq ($(OTA_SUPPORT),1)
     CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/arm-none-eabi-objcopy
     CY_ELF_TO_HEX_OPTIONS="-O ihex"
     CY_ELF_TO_HEX_FILE_ORDER="elf_first"
-    CY_TOOLCHAIN=GCC
     CY_TOOLCHAIN_LS_EXT=ld
     LDFLAGS+="-Wl,--defsym,MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE),--defsym,MCUBOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE),--defsym,CY_BOOT_PRIMARY_1_SIZE=$(CY_BOOT_PRIMARY_1_SIZE)"
     else
@@ -229,15 +243,13 @@ ifeq ($(OTA_SUPPORT),1)
     CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/ielftool
     CY_ELF_TO_HEX_OPTIONS="--ihex"
     CY_ELF_TO_HEX_FILE_ORDER="elf_first"
-    CY_TOOLCHAIN=$(TOOLCHAIN)
     CY_TOOLCHAIN_LS_EXT=icf
     LDFLAGS+=--config_def MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE) --config_def MCUBOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE) --config_def CY_BOOT_PRIMARY_1_SIZE=$(CY_BOOT_PRIMARY_1_SIZE)
     else
     ifeq ($(TOOLCHAIN),ARM)
-    CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/fromelf.exe
+    CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/fromelf
     CY_ELF_TO_HEX_OPTIONS="--i32 --output"
     CY_ELF_TO_HEX_FILE_ORDER="hex_first"
-    CY_TOOLCHAIN=GCC
     CY_TOOLCHAIN_LS_EXT=sct
     LDFLAGS+=--pd=-DMCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE) --pd=-DMCUBOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE) --pd=-DCY_BOOT_PRIMARY_1_SIZE=$(CY_BOOT_PRIMARY_1_SIZE)
     else
@@ -247,15 +259,15 @@ ifeq ($(OTA_SUPPORT),1)
     endif #GCC_ARM
 
     # Linker Script
-    LINKER_SCRIPT_WILDCARD:=../mtb_shared/anycloud-ota/latest-v2.X/$(TARGET_UNDERSCORE)/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/ota/*_ota_int.$(CY_TOOLCHAIN_LS_EXT)
+    LINKER_SCRIPT_WILDCARD:= $(SEARCH_anycloud-ota)/$(TARGET_UNDERSCORE)/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/ota/*_ota_int.$(CY_TOOLCHAIN_LS_EXT)
     LINKER_SCRIPT:=$(wildcard $(LINKER_SCRIPT_WILDCARD))
 
     # MCUBoot flash support location
-    MCUBOOT_DIR=../mtb_shared/anycloud-ota/latest-v2.X/source/mcuboot
+    MCUBOOT_DIR= $(SEARCH_anycloud-ota)/source/mcuboot
 
     # MCU sign script location
     ifeq ($(SIGN_SCRIPT_FILE_PATH),)
-        SIGN_SCRIPT_FILE_PATH=../mtb_shared/anycloud-ota/latest-v2.X/scripts/sign_script.bash
+        SIGN_SCRIPT_FILE_PATH= $(SEARCH_anycloud-ota)/scripts/sign_script.bash
     endif
 
     # build location
@@ -265,7 +277,7 @@ ifeq ($(OTA_SUPPORT),1)
     OUTPUT_FILE_PATH=$(BUILD_LOCATION)/$(TARGET)/$(CONFIG)
 
     # signing scripts and keys from MCUBoot
-    IMGTOOL_SCRIPT_NAME=imgtool.py
+    IMGTOOL_SCRIPT_NAME=imgtool_v1.5.0/imgtool.py
     MCUBOOT_SCRIPT_FILE_DIR=$(MCUBOOT_DIR)/scripts
     MCUBOOT_KEY_DIR=$(MCUBOOT_DIR)/keys
 
@@ -278,6 +290,7 @@ ifeq ($(OTA_SUPPORT),1)
     CY_BOOT_BOOTLOADER_SIZE=$(CY_BOOT_BOOTLOADER_SIZE) \
     CY_BOOT_PRIMARY_1_START=$(CY_BOOT_PRIMARY_1_START) \
     CY_BOOT_PRIMARY_1_SIZE=$(CY_BOOT_PRIMARY_1_SIZE) \
+    CY_BOOT_SECONDARY_1_START=$(CY_BOOT_SECONDARY_1_START) \
     CY_BOOT_SECONDARY_1_SIZE=$(CY_BOOT_SECONDARY_1_SIZE) \
     CY_BOOT_PRIMARY_2_SIZE=$(CY_BOOT_PRIMARY_2_SIZE) \
     CY_BOOT_SECONDARY_2_START=$(CY_BOOT_SECONDARY_2_START) \
@@ -285,10 +298,6 @@ ifeq ($(OTA_SUPPORT),1)
     APP_VERSION_MAJOR=$(APP_VERSION_MAJOR)\
     APP_VERSION_MINOR=$(APP_VERSION_MINOR)\
     APP_VERSION_BUILD=$(APP_VERSION_BUILD)
-
-ifeq ($(OTA_USE_EXTERNAL_FLASH),1)
-    DEFINES+=CY_BOOT_USE_EXTERNAL_FLASH=1
-endif
 
     # Custom post-build commands to run.
     MCUBOOT_KEY_FILE=$(MCUBOOT_KEY_DIR)/cypress-test-ec-p256.pem
@@ -305,7 +314,7 @@ endif
     CY_HEX_TO_BIN="$(CY_COMPILER_GCC_ARM_DIR)/bin/arm-none-eabi-objcopy"
     CY_BUILD_VERSION=$(APP_VERSION_MAJOR).$(APP_VERSION_MINOR).$(APP_VERSION_BUILD)
 
-    POSTBUILD=$(SIGN_SCRIPT_FILE_PATH) $(OUTPUT_FILE_PATH) $(APPNAME)\
+    POSTBUILD=$(SIGN_SCRIPT_FILE_PATH) $(OUTPUT_FILE_PATH) $(APPNAME) $(CY_PYTHON_PATH)\
               $(CY_ELF_TO_HEX) $(CY_ELF_TO_HEX_OPTIONS) $(CY_ELF_TO_HEX_FILE_ORDER)\
               $(MCUBOOT_SCRIPT_FILE_DIR) $(IMGTOOL_SCRIPT_NAME) $(IMGTOOL_COMMAND_ARG) $(CY_FLASH_ERASE_VALUE) $(MCUBOOT_HEADER_SIZE)\
               $(MCUBOOT_MAX_IMG_SECTORS) $(CY_BUILD_VERSION) $(CY_BOOT_PRIMARY_1_START) $(CY_BOOT_PRIMARY_1_SIZE)\
@@ -324,9 +333,9 @@ CY_APP_PATH=
 
 # Relative path to the shared repo location.
 #
-# All .mtb files have the format, <URI>#<COMMIT>#<LOCATION>. If the <LOCATION> field 
-# begins with $$ASSET_REPO$$, then the repo is deposited in the path specified by 
-# the CY_GETLIBS_SHARED_PATH variable. The default location is one directory level 
+# All .mtb files have the format, <URI>#<COMMIT>#<LOCATION>. If the <LOCATION> field
+# begins with $$ASSET_REPO$$, then the repo is deposited in the path specified by
+# the CY_GETLIBS_SHARED_PATH variable. The default location is one directory level
 # above the current app directory.
 # This is used with CY_GETLIBS_SHARED_NAME variable, which specifies the directory name.
 CY_GETLIBS_SHARED_PATH=../

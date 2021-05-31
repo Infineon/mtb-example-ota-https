@@ -9,6 +9,6 @@
   "Connection":"HTTPS",
   "Server":"192.168.0.10",
   "Port":"4443",
-  "File":"/mtb-example-anycloud-ota-http.bin",
+  "File":"/mtb-example-anycloud-ota-https.bin",
   "UniqueTopicName":"replace"
 }

@@ -3,23 +3,24 @@
 *
 * Description: This file contains task and functions related to OTA operation.
 *
-*******************************************************************************
-* (c) 2020-2021, Cypress Semiconductor Corporation. All rights reserved.
-*******************************************************************************
-* This software, including source code, documentation and related materials
-* ("Software"), is owned by Cypress Semiconductor Corporation or one of its
-* subsidiaries ("Cypress") and is protected by and subject to worldwide patent
-* protection (United States and foreign), United States copyright laws and
-* international treaty provisions. Therefore, you may use this Software only
-* as provided in the license agreement accompanying the software package from
-* which you obtained this Software ("EULA").
+********************************************************************************
+* Copyright 2020-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
+* This software, including source code, documentation and related
+* materials ("Software") is owned by Cypress Semiconductor Corporation
+* or one of its affiliates ("Cypress") and is protected by and subject to
+* worldwide patent protection (United States and foreign),
+* United States copyright laws and international treaty provisions.
+* Therefore, you may use this Software only as provided in the license
+* agreement accompanying the software package from which you
+* obtained this Software ("EULA").
 * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
-* non-transferable license to copy, modify, and compile the Software source
-* code solely for use in connection with Cypress's integrated circuit products.
-* Any reproduction, modification, translation, compilation, or representation
-* of this Software except as specified above is prohibited without the express
-* written permission of Cypress.
+* non-transferable license to copy, modify, and compile the Software
+* source code solely for use in connection with Cypress's
+* integrated circuit products.  Any reproduction, modification, translation,
+* compilation, or representation of this Software except as specified
+* above is prohibited without the express written permission of Cypress.
 *
 * Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED
@@ -30,9 +31,9 @@
 * not authorize its products for use in any products where a malfunction or
 * failure of the Cypress product may reasonably be expected to result in
 * significant property damage, injury or death ("High Risk Product"). By
-* including Cypress's product in a High Risk Product, the manufacturer of such
-* system or application assumes all risk of such use and in doing so agrees to
-* indemnify Cypress against all liability.
+* including Cypress's product in a High Risk Product, the manufacturer
+* of such system or application assumes all risk of such use and in doing
+* so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
 
 /* Header file includes */
@@ -43,13 +44,14 @@
 /* Wi-Fi connection manager header files. */
 #include "cy_wcm.h"
 
-/* IoT SDK, Secure Sockets initialization */
-#include "iot_init.h"
-#include "cy_iot_network_secured_socket.h"
+/* IoT SDK, Secure Sockets, and MQTT initialization */
+#include "cy_tcpip_port_secure_sockets.h"
 
 /* FreeRTOS header file */
 #include <FreeRTOS.h>
 #include <task.h>
+
+#include "cy_log.h"
 
 /* OTA API */
 #include "cy_ota_api.h"
@@ -63,7 +65,7 @@
 
 /*******************************************************************************
 * Macros
-*******************************************************************************/
+********************************************************************************/
 /* MAX connection retries to join WI-FI AP */
 #define MAX_CONNECTION_RETRIES              (10u)
 
@@ -72,26 +74,15 @@
 
 /*******************************************************************************
 * Forward declaration
-*******************************************************************************/
+********************************************************************************/
 cy_rslt_t connect_to_wifi_ap(void);
 cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data);
 
 /*******************************************************************************
 * Global Variables
-*******************************************************************************/
+********************************************************************************/
 /* OTA context */
 cy_ota_context_ptr ota_context;
-
-/* HTTP Credentials for OTA */
-struct IotNetworkCredentials credentials =
-{
-    .pRootCa = ROOT_CA_CERTIFICATE,
-    .rootCaSize = sizeof(ROOT_CA_CERTIFICATE),
-    .pClientCert = CLIENT_CERTIFICATE,
-    .clientCertSize = sizeof(CLIENT_CERTIFICATE),
-    .pPrivateKey = CLIENT_KEY,
-    .privateKeySize = sizeof(CLIENT_KEY),
-};
 
 /* Network parameters for OTA */
 cy_ota_network_params_t ota_network_params =
@@ -100,15 +91,21 @@ cy_ota_network_params_t ota_network_params =
     {
         .server =
         {
-            .pHostName = HTTP_SERVER,
+            .host_name = HTTP_SERVER,
             .port = HTTP_SERVER_PORT
         },
         .file = OTA_HTTP_JOB_FILE,
-#if (ENABLE_TLS == true)
-        .credentials = &credentials
-#else
-        .credentials = NULL
-#endif
+    #if (ENABLE_TLS == true)
+        .credentials =
+        {
+            .root_ca = ROOT_CA_CERTIFICATE,
+            .root_ca_size = sizeof(ROOT_CA_CERTIFICATE),
+            .client_cert = CLIENT_CERTIFICATE,
+            .client_cert_size = sizeof(CLIENT_CERTIFICATE),
+            .private_key = CLIENT_KEY,
+            .private_key_size = sizeof(CLIENT_KEY),
+        },
+    #endif
     },
     .use_get_job_flow = CY_OTA_JOB_FLOW,
 #if (ENABLE_TLS == true)
@@ -124,6 +121,8 @@ cy_ota_agent_params_t ota_agent_params =
     .cb_func = ota_callback,
     .cb_arg = &ota_context,
     .reboot_upon_completion = 1,
+    .validate_after_reboot = 1,
+    .do_not_send_result = 1
 };
 
 /*******************************************************************************
@@ -138,9 +137,15 @@ cy_ota_agent_params_t ota_agent_params =
  * Return:
  *  void
  *
- ******************************************************************************/
+ *******************************************************************************/
 void ota_task(void *args)
 {
+
+    /* default for OTA logging to NOTiCE */
+    cy_ota_set_log_level(CY_LOG_WARNING);
+
+    /* Validate the update so we do not revert */
+    cy_ota_storage_validated();
 
 #ifdef CY_BOOT_USE_EXTERNAL_FLASH
     if (psoc6_qspi_init() != 0)
@@ -157,22 +162,12 @@ void ota_task(void *args)
         CY_ASSERT(0);
     }
 
-    /* Initialize the underlying support code that is needed for OTA */
-    if ( !IotSdk_Init() )
+    /* Initialize underlying support code that is needed for OTA and HTTP */
+    if (cy_awsport_network_init() != CY_RSLT_SUCCESS)
     {
-        printf("\n IotSdk_Init Failed.\n");
+        printf("\n Secure sockets initialization failed.\n");
         CY_ASSERT(0);
     }
-
-    /* Call the Network Secured Sockets initialization function. */
-    if( IotNetworkSecureSockets_Init() != IOT_NETWORK_SUCCESS )
-    {
-        printf("\n IotNetworkSecureSockets_Init Failed.\n");
-        CY_ASSERT(0);
-    }
-
-    /* Add the network interface to the OTA network parameters */
-    ota_network_params.network_interface = (void *)IOT_NETWORK_INTERFACE_CY_SECURE_SOCKETS;
 
     /* Initialize and start the OTA agent */
     if( cy_ota_agent_start(&ota_network_params, &ota_agent_params, &ota_context) != CY_RSLT_SUCCESS )
@@ -191,7 +186,7 @@ void ota_task(void *args)
  *  Connects to Wi-Fi AP using the user-configured credentials, retries up to a
  *  configured number of times until the connection succeeds.
  *
- ******************************************************************************/
+ *******************************************************************************/
 cy_rslt_t connect_to_wifi_ap(void)
 {
     cy_wcm_config_t wifi_config = { .interface = CY_WCM_INTERFACE_TYPE_STA};
@@ -270,11 +265,14 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
             break;
 
         case CY_OTA_REASON_SUCCESS:
-            printf(">> APP CB OTA SUCCESS state:%d %s last_error:%s\n\n", cb_data->state, state_string, error_string);
+            printf(">> APP CB OTA SUCCESS state:%d %s last_error:%s\n\n",
+                    cb_data->state,
+                    state_string, error_string);
             break;
 
         case CY_OTA_REASON_FAILURE:
-            printf(">> APP CB OTA FAILURE state:%d %s last_error:%s\n\n", cb_data->state, state_string, error_string);
+            printf(">> APP CB OTA FAILURE state:%d %s last_error:%s\n\n",
+                    cb_data->state, state_string, error_string);
             break;
 
         case CY_OTA_REASON_STATE_CHANGE:
@@ -296,16 +294,20 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
                     /* NOTE:
                      *  HTTP - json_doc holds the HTTP "GET" request
                      */
-                    if ((cb_data->broker_server.pHostName == NULL) ||
+                    if ((cb_data->broker_server.host_name == NULL) ||
                         ( cb_data->broker_server.port == 0) ||
                         ( strlen(cb_data->file) == 0) )
                     {
                         printf("ERROR in callback data: HTTP: server: %p port: %d topic: '%p'\n",
-                                cb_data->broker_server.pHostName, cb_data->broker_server.port, cb_data->file);
-                        return CY_OTA_CB_RSLT_OTA_STOP;
+                                cb_data->broker_server.host_name,
+                                cb_data->broker_server.port,
+                                cb_data->file);
+                        cb_result = CY_OTA_CB_RSLT_OTA_STOP;
                     }
                     printf("HTTP: server:%s port: %d file: '%s'\n",
-                            cb_data->broker_server.pHostName, cb_data->broker_server.port, cb_data->file);
+                            cb_data->broker_server.host_name,
+                            cb_data->broker_server.port,
+                            cb_data->file);
 
                     break;
 
@@ -322,7 +324,9 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
                     break;
 
                 case CY_OTA_STATE_JOB_PARSE:
-                    printf("APP CB OTA PARSE JOB: '%.*s' \n", strlen(cb_data->json_doc), cb_data->json_doc);
+                    printf("APP CB OTA PARSE JOB: '%.*s' \n",
+                    strlen(cb_data->json_doc),
+                    cb_data->json_doc);
                     break;
 
                 case CY_OTA_STATE_JOB_REDIRECT:
@@ -331,7 +335,8 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
 
                 case CY_OTA_STATE_DATA_CONNECT:
                     printf("APP CB OTA CONNECT FOR DATA using ");
-                    printf("HTTP: %s:%d \n", cb_data->broker_server.pHostName, cb_data->broker_server.port);
+                    printf("HTTP: %s:%d \n", cb_data->broker_server.host_name,
+                    cb_data->broker_server.port);
                     break;
 
                 case CY_OTA_STATE_DATA_DOWNLOAD:
@@ -352,7 +357,9 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
                     /* NOTE:
                      *  HTTP - json_doc holds the HTTP "GET" request
                      */
-                    printf("HTTP: Server:%s port: %d\n", cb_data->broker_server.pHostName, cb_data->broker_server.port);
+                    printf("HTTP: Server:%s port: %d\n",
+                            cb_data->broker_server.host_name,
+                            cb_data->broker_server.port);
                     break;
 
                 case CY_OTA_STATE_RESULT_SEND:
@@ -380,7 +387,13 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
                     break;
 
                 case CY_OTA_STATE_STORAGE_WRITE:
-                    printf("APP CB OTA STORAGE WRITE %ld%% (%ld of %ld)\n", cb_data->percentage, cb_data->bytes_written, cb_data->total_size);
+                    printf("APP CB OTA STORAGE WRITE %ld%% (%ld of %ld)\n",
+                            (unsigned long)cb_data->percentage,
+                            (unsigned long)cb_data->bytes_written,
+                            (unsigned long)cb_data->total_size);
+                    
+                    /* Move cursor to previous line */
+                    printf("\x1b[1F");
                     break;
 
                 case CY_OTA_STATE_STORAGE_CLOSE:

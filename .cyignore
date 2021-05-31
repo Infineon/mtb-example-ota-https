@@ -1,0 +1,2 @@
+$(SEARCH_bluetooth-freertos)
+$(SEARCH_btstack)
