@@ -7,7 +7,7 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2021, Cypress Semiconductor Corporation (an Infineon company)
+# Copyright 2018-2022, Cypress Semiconductor Corporation (an Infineon company)
 # SPDX-License-Identifier: Apache-2.0
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -114,7 +114,6 @@ MBEDTLSFLAGS = MBEDTLS_USER_CONFIG_FILE='"configs/mbedtls_user_config.h"'
 # Add additional defines to the build process (without a leading -D).
 DEFINES=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF 
 DEFINES+=CY_RTOS_AWARE
-
 # Set user agent name in all request headers with the specified name
 DEFINES += HTTP_USER_AGENT_VALUE="\"anycloud-http-client\""
 # Configure response header maximum length with the specified value - HTTP
@@ -240,14 +239,14 @@ ifeq ($(OTA_SUPPORT),1)
     LDFLAGS+="-Wl,--defsym,MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE),--defsym,MCUBOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE),--defsym,CY_BOOT_PRIMARY_1_SIZE=$(CY_BOOT_PRIMARY_1_SIZE)"
     else
     ifeq ($(TOOLCHAIN),IAR)
-    CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/ielftool
+    CY_ELF_TO_HEX="$(CY_CROSSPATH)/bin/ielftool"
     CY_ELF_TO_HEX_OPTIONS="--ihex"
     CY_ELF_TO_HEX_FILE_ORDER="elf_first"
     CY_TOOLCHAIN_LS_EXT=icf
     LDFLAGS+=--config_def MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE) --config_def MCUBOOT_BOOTLOADER_SIZE=$(MCUBOOT_BOOTLOADER_SIZE) --config_def CY_BOOT_PRIMARY_1_SIZE=$(CY_BOOT_PRIMARY_1_SIZE)
     else
     ifeq ($(TOOLCHAIN),ARM)
-    CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/fromelf
+    CY_ELF_TO_HEX="$(CY_CROSSPATH)/bin/fromelf"
     CY_ELF_TO_HEX_OPTIONS="--i32 --output"
     CY_ELF_TO_HEX_FILE_ORDER="hex_first"
     CY_TOOLCHAIN_LS_EXT=sct

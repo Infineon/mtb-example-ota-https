@@ -4,7 +4,7 @@
 * Description: This file contains task and functions related to OTA operation.
 *
 ********************************************************************************
-* Copyright 2020-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2020-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -100,10 +100,14 @@ cy_ota_network_params_t ota_network_params =
         {
             .root_ca = ROOT_CA_CERTIFICATE,
             .root_ca_size = sizeof(ROOT_CA_CERTIFICATE),
+        #if (USING_CLIENT_CERTIFICATE == true)
             .client_cert = CLIENT_CERTIFICATE,
             .client_cert_size = sizeof(CLIENT_CERTIFICATE),
+        #endif
+        #if (USING_CLIENT_KEY == true)
             .private_key = CLIENT_KEY,
             .private_key_size = sizeof(CLIENT_KEY),
+        #endif
         },
     #endif
     },

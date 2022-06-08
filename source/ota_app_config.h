@@ -4,7 +4,7 @@
 * Description: Contains all the configurations required for the OTA App.
 *
 ********************************************************************************
-* Copyright 2020-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2020-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -89,6 +89,8 @@
         ".........base64 data.......\n" \
         "-----END CERTIFICATE-------\n"
 */
+#define USING_CLIENT_CERTIFICATE    (false)
+
 #define CLIENT_CERTIFICATE  ""
 
 /* Private Key
@@ -98,6 +100,8 @@
         "...........base64 data.........\n" \
         "-----END RSA PRIVATE KEY-------\n"
 */
+#define USING_CLIENT_KEY    (false)
+
 #define CLIENT_KEY  ""
 
 #endif /* SOURCE_OTA_APP_CONFIG_H_ */
