@@ -55,13 +55,10 @@
 
 /* OTA API */
 #include "cy_ota_api.h"
+#include "ota_serial_flash.h"
 
 /* App specific configuration */
 #include "ota_app_config.h"
-
-#ifdef CY_BOOT_USE_EXTERNAL_FLASH
-#include "cy_smif_psoc6.h"
-#endif
 
 /*******************************************************************************
 * Macros
@@ -77,6 +74,7 @@
 ********************************************************************************/
 cy_rslt_t connect_to_wifi_ap(void);
 cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data);
+void print_heap_usage(char *msg);
 
 /*******************************************************************************
 * Global Variables
@@ -148,16 +146,24 @@ void ota_task(void *args)
     /* default for OTA logging to NOTiCE */
     cy_ota_set_log_level(CY_LOG_WARNING);
 
-    /* Validate the update so we do not revert */
-    cy_ota_storage_validated();
+#if defined(OTA_USE_EXTERNAL_FLASH)
+    /* We need to init from every ext flash write
+     * See ota_serial_flash.h
+     */
 
-#ifdef CY_BOOT_USE_EXTERNAL_FLASH
-    if (psoc6_qspi_init() != 0)
+    /* initialize SMIF interface */
+    printf("call ota_smif_initialize()\n");
+    if (ota_smif_initialize() != CY_RSLT_SUCCESS)
     {
-        printf("psoc6_qspi_init() FAILED!!\r\n");
-        CY_ASSERT(0);
+        printf("ERROR returned from ota_smif_initialize()!!!!!\n");
     }
-#endif /* CY_BOOT_USE_EXTERNAL_FLASH */
+#endif /* OTA_USE_EXTERNAL_FLASH */
+
+    /* Validate the update so we do not revert */
+    if(cy_ota_storage_validated() != CY_RSLT_SUCCESS)
+    {
+        printf("\n Failed to validate the update.\n");
+    }
 
     /* Connect to Wi-Fi AP */
     if( connect_to_wifi_ap() != CY_RSLT_SUCCESS )
@@ -262,6 +268,8 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
     state_string  = cy_ota_get_state_string(cb_data->state);
     error_string  = cy_ota_get_error_string(cy_ota_get_last_error());
 
+    print_heap_usage("In OTA Callback");
+    
     switch (cb_data->reason)
     {
 

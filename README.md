@@ -4,18 +4,18 @@ This code example demonstrates an OTA update with PSoC&trade; 6 MCU and AIROC™
 
 MCUboot is a "secure" bootloader for 32-bit MCUs. See the [README](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic/blob/master/README.md) of the [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example for more details.
 
-The OTA feature is enabled by the *Over-the-air update middleware library*. See the [anycloud-ota](https://github.com/Infineon/anycloud-ota) middleware repository on Github for more details.
+Over-the-air update middleware library enables the OTA feature. See the [ota-update](https://github.com/Infineon/ota-update) middleware repository on Github for more details.
 
-[View this README on GitHub.](https://github.com/Infineon/mtb-example-anycloud-ota-https)
+[View this README on GitHub.](https://github.com/Infineon/mtb-example-ota-https)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzE1ODUiLCJTcGVjIE51bWJlciI6IjAwMi0zMTU4NSIsIkRvYyBUaXRsZSI6Ik92ZXItdGhlLWFpciBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgSFRUUFMiLCJyaWQiOiJ5ZWt0IiwiRG9jIHZlcnNpb24iOiIzLjAuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiUFNPQyJ9)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzE1ODUiLCJTcGVjIE51bWJlciI6IjAwMi0zMTU4NSIsIkRvYyBUaXRsZSI6Ik92ZXItdGhlLWFpciBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgSFRUUFMiLCJyaWQiOiJ5ZWt0IiwiRG9jIHZlcnNpb24iOiI0LjAuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiUFNPQyJ9)
 
 ## Requirements
 
-- [ModusToolbox&trade; software](https://www.cypress.com/products/modustoolbox-software-environment) v2.4 or later
+- [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software) v2.4 or later
 - Board support package (BSP) minimum required version: 3.0.0
 - Programming language: C
-- Associated parts: All [PSoC&trade; 6 MCU](http://www.cypress.com/PSoC6) parts with SDIO interface, [AIROC™ CYW43xxx Wi-Fi & Bluetooth® combo chips](https://www.cypress.com/products/airoc-wi-fi-combos)
+- Associated parts: All [PSoC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu/) parts with SDIO interface, [AIROC™ CYW43xxx Wi-Fi & Bluetooth® combo chips](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos)
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
@@ -25,11 +25,9 @@ The OTA feature is enabled by the *Over-the-air update middleware library*. See 
 
 ## Supported kits (make variable 'TARGET')
 
-This example requires PSoC&trade; 6 MCU devices with at least 2-MB flash and 1-MB SRAM, and therefore supports only the following kits:
-
-- [PSoC&trade; 6 Wi-Fi Bluetooth&reg; prototyping kit](https://www.cypress.com/CY8CPROTO-062-4343W) (`CY8CPROTO-062-4343W`) - Default value of `TARGET`
-- [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; pioneer kit](https://www.cypress.com/CY8CKIT-062S2-43012) (`CY8CKIT-062S2-43012`)
-- [PSoC&trade; 62S2 evaluation kit](https://www.cypress.com/CY8CEVAL-062S2) (`CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-MUR-43439M2`)
+- [PSoC&trade; 6 Wi-Fi Bluetooth&reg; prototyping kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8cproto-062-4343w) (`CY8CPROTO-062-4343W`) - Default value of `TARGET`
+- [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; pioneer kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8ckit-062s2-43012) (`CY8CKIT-062S2-43012`)
+- [PSoC&trade; 62S2 evaluation kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8ceval-062s2) (`CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-MUR-43439M2`)
 
 ## Hardware setup
 
@@ -39,87 +37,23 @@ This example uses the board's default configuration. See the kit user guide to e
 
 Install a terminal emulator if you do not have one. Instructions in this document use [Tera Term](https://ttssh2.osdn.jp/index.html.en).
 
-This examples uses local-web-server to setup a local HTTP server, see [Setting up HTTP/HTTPS server using local-web-server](#setting-up-an-httphttps-server-using-local-web-server-based-on-nodejs) for more details.
+This example uses local-web-server to set up a local HTTP server, see [Setting up HTTP/HTTPS server using local-web-server](#setting-up-an-httphttps-server-using-local-web-server-based-on-nodejs) for more details.
 
 ## Structure and overview
 
 This code example is a dual-core project, where the MCUboot bootloader app runs on the CM0+ core and the OTA update app runs on the CM4 core. The OTA update app fetches the new image and places it in the flash memory; the bootloader takes care of updating the existing image with the new image. The [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example is the bootloader project used for this purpose.
 
-The bootloader project and this OTA update project should be built and programmed independently. They must be placed separately in the workspace as you would do for any other two independent projects. An example workspace would look something like this:
+The bootloader project and this OTA update project should be built and programmed independently. They must be placed separately in the workspace as you would do for any other two independent projects. An example workspace will be as follows:
 
    ```
    <example-workspace>
       |
       |-<mtb-example-psoc6-mcuboot-basic>
-      |-<mtb-example-anycloud-ota-https>
+      |-<mtb-example-ota-https>
       |
    ```
 
-You must first build and program the MCUboot bootloader project into the CM0+ core; this needs to be done only once. The OTA update app can then be programmed into the CM4 core; you need to only modify this app for all application purposes.
-
-## Building and programming MCUboot
-
-The [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example bundles two applications: the bootloader app that runs on CM0+, and the Blinky app that runs on CM4. For this code example, only the bootloader app is required. The root directory of the bootloader app is referred to as *\<bootloader_cm0p>* in this document.
-
-1. Import the [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example per the instructions in the [Using the code example](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic#using-the-code-example) section of its [README](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic/blob/master/README.md).
-
-2. The bootloader and OTA applications must have the same understanding of the memory layout. Override the default memory layout by editing the make variables in the *\<bootloader_cm0p>/shared_config.mk* file. For this example, perform the following edits to match the memory layout with the OTA application:
-
-   ```
-   ifeq ($(USE_EXT_FLASH), 1)
-   MCUBOOT_SLOT_SIZE=0x1C0000
-   else
-   MCUBOOT_SLOT_SIZE=0xF0000
-   endif
-   .
-   .
-   .
-   MCUBOOT_SCRATCH_SIZE=0x4000
-   ```
-
-3. Copy the *\<mtb_shared>/mcuboot/\<tag>/boot/cypress/MCUBootApp/config* folder and paste it in the *\<bootloader_cm0p>* folder.
-
-4. Edit the *\<bootloader_cm0p>/config/mcuboot_config/mcuboot_config.h* file and comment out the following defines to skip checking the image signature:
-
-   ```
-   #define MCUBOOT_SIGN_EC256
-   #define NUM_ECC_BYTES (256 / 8)
-   #define MCUBOOT_VALIDATE_PRIMARY_SLOT
-   ```
-
-5. Edit *\<bootloader_cm0p>/app.mk* and replace the MCUboot include `$(MCUBOOTAPP_PATH)/config` with `./config`. This gets the build system to find the new copy of the config directory that you pasted in the *\<bootloader_cm0p>* directory, instead of the default one supplied by the library.
-
-6. Edit *\<bootloader_cm0p>/Makefile*:
-
-   1. Set `USE_EXT_FLASH` to '1' to use the external flash to store the secondary image.
-
-   2. Set `SWAP_UPGRADE` to '1' to enable swap feature of MCUboot.
-
-7. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
-
-8. Open a CLI terminal.
-
-   On Linux and macOS, you can use any terminal application. On Windows, open the "modus-shell" app from the Start menu.
-
-9. Navigate the terminal to the *\<mtb_shared>/mcuboot/\<tag>/scripts* folder.
-
-10. Run the following command to ensure that the required modules are installed or already present ("Requirement already satisfied:" is printed).
-
-      ```
-      pip install -r requirements.txt
-      ```
-
-11. Open a serial terminal emulator and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
-
-12. Build and program the application per the [Step-by-step instructions](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic#step-by-step-instructions) in its [README](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic/blob/master/README.md).
-
-    After programming, the bootloader application starts automatically.
-
-    **Figure 1. Booting with no bootable image**
-
-    ![](images/booting_without_bootable_image.png)
-
-**Note:** This example does not demonstrate securely upgrading the image and booting from it using features such as image-signing and secure boot. See the [PSoC&trade; 64 line of secured MCUs](https://www.cypress.com/psoc64) that offer all those features built around MCUboot.
+You must first build and program the MCUboot bootloader project into the CM0+ core; this should be done only once. The OTA update app can then be programmed into the CM4 core; you need to only modify this app for all application purposes.
 
 ## Using the code example
 
@@ -127,11 +61,11 @@ Create the project and open it using one of the following:
 
 <details><summary><b>In Eclipse IDE for ModusToolbox&trade; software</b></summary>
 
-1. Click the **New Application** link in the **Quick Panel** (or, use **File** > **New** > **ModusToolbox Application**). This launches the [Project Creator](https://www.cypress.com/ModusToolboxProjectCreator) tool.
+1. Click the **New Application** link in the **Quick Panel** (or, use **File** > **New** > **ModusToolbox Application**). This launches the [Project Creator](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Project_Creator_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcabbd31e5) tool.
 
 2. Pick a kit supported by the code example from the list shown in the **Project Creator - Choose Board Support Package (BSP)** dialog.
 
-   When you select a supported kit, the example is reconfigured automatically to work with the kit. To work with a different supported kit later, use the [Library Manager](https://www.cypress.com/ModusToolboxLibraryManager) to choose the BSP for the supported kit. You can use the Library Manager to select or update the BSP and firmware libraries used in this application. To access the Library Manager, click the link from the **Quick Panel**.
+   When you select a supported kit, the example is reconfigured automatically to work with the kit. To work with a different supported kit later, use the [Library Manager](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Library_Manager_User_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99ab34b831ce) to choose the BSP for the supported kit. You can use the Library Manager to select or update the BSP and firmware libraries used in this application. To access the Library Manager, click the link from the **Quick Panel**.
 
    You can also just start the application creation process again and select a different kit.
 
@@ -145,7 +79,7 @@ Create the project and open it using one of the following:
 
 6. Click **Create** to complete the application creation process.
 
-For more details, see the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.cypress.com/MTBEclipseIDEUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*).
+For more details, see the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.infineon.com/dgdl/Infineon-Eclipse_IDE_for_ModusToolbox_User_Guide_1-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcb86331e8) (locally available at *{ModusToolbox&trade; software install directory}/ide_{version}/docs/mt_ide_user_guide.pdf*).
 
 </details>
 
@@ -166,13 +100,13 @@ Argument | Description | Required/optional
 
 <br>
 
-The following example will clone the "[Hello World](https://github.com/Infineon/mtb-example-psoc6-hello-world)" application with the desired name "MyHelloWorld" configured for the *CY8CPROTO-062-4343W* BSP into the specified working directory, *C:/mtb_projects*:
+The following example will clone the "[mtb-example-ota-https](https://github.com/Infineon/mtb-example-anycloud-ota-https)" application with the desired name "OtaHttps" configured for the *CY8CPROTO-062-4343W* BSP into the specified working directory, *C:/mtb_projects*:
 
    ```
-   project-creator-cli --board-id CY8CPROTO-062-4343W --app-id mtb-example-psoc6-hello-world --user-app-name MyHelloWorld --target-dir "C:/mtb_projects"
+   project-creator-cli --board-id CY8CPROTO-062-4343W --app-id mtb-example-ota-https --user-app-name OtaHttps --target-dir "C:/mtb_projects"
    ```
 
-**Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; software user guide](https://www.cypress.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
+**Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; software user guide](https://www.infineon.com/dgdl/Infineon-ModusToolbox_2.4_User_Guide-Software-v01_00-EN.pdf?fileId=8ac78c8c7e7124d1017ed97e72563632) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
 
@@ -180,7 +114,7 @@ The following example will clone the "[Hello World](https://github.com/Infineon/
 
 Use one of the following options:
 
-- **Use the standalone [Project Creator](https://www.cypress.com/ModusToolboxProjectCreator) tool:**
+- **Use the standalone [Project Creator](https://www.infineon.com/dgdl/Infineon-ModusToolbox_Project_Creator_Guide_3-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcabbd31e5) tool:**
 
    1. Launch Project Creator from the Windows Start menu or from *{ModusToolbox&trade; software install directory}/tools_{version}/project-creator/project-creator.exe*.
 
@@ -200,9 +134,63 @@ Use one of the following options:
 
    3. Follow the instructions displayed in the terminal to create or import the application as an IDE project.
 
-For a list of supported IDEs and more details, see the "Exporting to IDEs" section of the [ModusToolbox&trade; software user guide](https://www.cypress.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
+For a list of supported IDEs and more details, see the "Exporting to IDEs" section of the [ModusToolbox&trade; software user guide](https://www.infineon.com/dgdl/Infineon-ModusToolbox_2.4_User_Guide-Software-v01_00-EN.pdf?fileId=8ac78c8c7e7124d1017ed97e72563632) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
+
+## Building and programming MCUboot
+
+The [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example bundles two applications: the bootloader app that runs on CM0+, and the Blinky app that runs on CM4. For this code example, only the bootloader app is required and the root directory of the bootloader app is referred to as *\<bootloader_cm0p>* in this document.
+
+1. Import the [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example per the instructions in the [Using the code example](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic#using-the-code-example) section of its [README](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic/blob/master/README.md).
+
+2. The bootloader and OTA applications must have the same understanding of the memory layout. The memory layout is defined through JSON files. The ota-update library provides a set of predefined JSON files that can be readily used. Both the bootloader and OTA application must use the same JSON file.
+
+   The *\<mtb_shared>/ota-update/\<tag>/configs/flashmap/* folder contains the predefined flashmap JSON files. The files with prefix **psoc62_2m_** are supported by this example.
+
+   Copy the required flashmap JSON file and paste it in the *\<bootloader_cm0p>/flashmap* folder.
+
+3. Modify the value of the `FLASH_MAP` variable in  *\<bootloader_cm0p>/shared_config.mk* to the selected JSON file name from the previous step.
+
+4. Copy the *\<mtb_shared>/mcuboot/\<tag>/boot/cypress/MCUBootApp/config* folder and paste it in the *\<bootloader_cm0p>* folder. 
+
+5. Edit the *\<bootloader_cm0p>/config/mcuboot_config/mcuboot_config.h* file and comment out the following defines to skip checking the image signature:
+
+   ```
+   #define MCUBOOT_SIGN_EC256
+   .
+   .
+   .
+   #define MCUBOOT_VALIDATE_PRIMARY_SLOT
+   ```
+
+6. Edit *\<bootloader_cm0p>/app.mk* and replace the MCUboot include `$(MCUBOOTAPP_PATH)/config` with `./config`. This gets the build system to find the new copy of the config directory that you pasted in the *\<bootloader_cm0p>* directory, instead of the default one supplied by the library.
+
+7. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
+
+8. Open a CLI terminal.
+
+   On Linux and macOS, you can use any terminal application. On Windows, open the **modus-shell** app from the Start menu.
+
+9. Navigate the terminal to the *\<mtb_shared>/mcuboot/\<tag>/scripts* folder.
+
+10. Run the following command to ensure that the required modules are installed or already present ("Requirement already satisfied:" is printed).
+
+      ```
+      pip install -r requirements.txt
+      ```
+
+11. Open a serial terminal emulator and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
+
+12. Build and program the application per the [Step-by-step](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic#step-by-step-instructions) instructions in its [README](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic/blob/master/README.md).
+
+    After programming, the bootloader application starts automatically.
+
+    **Figure 1. Booting with no bootable image**
+
+    ![](images/booting_without_bootable_image.png)
+
+**Note:** This example does not demonstrate securely upgrading the image and booting from it using features such as image-signing and secured boot. See the [PSoC&trade; 64 line of "Secure" MCUs](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu/psoc-64) that offer all those features built around MCUboot.
 
 ## Setting up an HTTP/HTTPS server using local-web-server (based on *node.js*)
 
@@ -214,7 +202,7 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
 2. Open a CLI terminal.
 
-   On Linux and macOS, you can use any terminal application. On Windows, open the "modus-shell" app from the Start menu.
+   On Linux and macOS, you can use any terminal application. On Windows, open the **modus-shell** app from the Start menu.
 
 3. Navigate to the *\<OTA Application>/scripts/* folder.
 
@@ -285,13 +273,15 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
 2. Open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
 
-3. Edit the *\<OTA Application>/source/ota_app_config.h* file to configure your OTA application:
+3. Modify the `OTA_FLASH_MAP` variable in the *\<OTA Application>/Makefile* to change the JSON file name to match the selection made while programming the bootloader application.
 
-   1. Modify the connection configuration such as `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY` macros to match the settings of your Wi-Fi network. Make sure the device running the HTTP server and the kit are connected to the same network.
+4. Edit the *\<OTA Application>/source/ota_app_config.h* file to configure your OTA application:
+
+   1. Modify the connection configuration such as the `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY` macros to match the settings of your Wi-Fi network. Make sure that the device running the HTTP server and the kit are connected to the same network.
 
    2. Modify the `HTTP_SERVER` address to match the IP address of your HTTP server.
 
-   3. By default, this code example uses HTTPS (TLS) protocol. To use the example in HTTP (non-TLS) mode, modify `ENABLE_TLS` to `false` and skip the next step of adding the certificate.
+   3. By default, this code example uses HTTPS (TLS) protocol. To use the example in HTTP (non-TLS) mode, modify `ENABLE_TLS` to **false** and skip the next step of adding the certificate.
 
    4. Add the certificates and key:
 
@@ -311,19 +301,19 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
          ```
          python format_cert_key.py http_ca.crt
          ```
-      4. Copy the generated string and add it to the `ROOT_CA_CERTIFICATE` macro in the ota_app_config.h file per the sample shown.
+      4. Copy the generated string and add it to the `ROOT_CA_CERTIFICATE` macro in the *ota_app_config.h* file per the sample shown.
 
-      Note that the local-web-server doesn't authenticate a client through the certificate; this is the reason why the client certificate and client key are not added here. If you use some other server, which can do client-side authentication, add the *http_client.crt* and *http_client.key* files as well. Also, set the `USING_CLIENT_CERTIFICATE` and `USING_CLIENT_KEY` macros to value `true`.
+      Note that the local-web-server does not authenticate a client through the certificate; this is the reason why the client certificate and client key are not added here. If you use some other server, which can do client-side authentication, add the *http_client.crt* and *http_client.key* files. Also, set the `USING_CLIENT_CERTIFICATE` and `USING_CLIENT_KEY` macros to value **true**.
 
-4. Edit the job document (*\<OTA Application>/scripts/ota_update.json*):
+5. Edit the job document (*\<OTA Application>/scripts/ota_update.json*):
 
    1. Modify the value of `Server` to match the IP address of your HTTP server.
 
    2. Modify the value of `Board` to match the kit you are using.
 
-   3. In Step 3, if the code example has been configured to work in non-TLS mode: Set the value of `Port` to `8080`, and `Connection` to `HTTP`.
+   3. In Step 3, if the code example has been configured to work in non-TLS mode: Set the value of `Port` to **8080**, and `Connection` to **HTTP**.
 
-5. Build and program the board.
+6. Build and program the board.
 
    <details open><summary><b>Using Eclipse IDE for ModusToolbox&trade;</b></summary>
 
@@ -351,11 +341,11 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
    ![](images/connection_http_server.png)
 
-6. The job document placed in the *\<OTA Application>/scripts/* folder has a value of `Version` as `1.0.0`. Because the OTA application version and the available update version are the same, the update will not happen.
+7. The job document placed in the *\<OTA Application>/scripts/* folder has a value of `Version` as **1.0.0**. Because the OTA application version and the available update version are the same, the update will not happen.
 
-7. Modify the value of the `BLINKY_DELAY_MS` macro to `(100)` in the *\<OTA Application>/source/led_task.c* file and change the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to '1'.
+8. Modify the value of the `BLINKY_DELAY_MS` macro to **(100)** in the *\<OTA Application>/source/led_task.c* file and change the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to **1**.
 
-8. Build the app (**DO NOT** program it to the kit). This new image will be uploaded to the HTTP server in the following steps to demonstrate the OTA update.
+9. Build the app (**DO NOT** program it to the kit). This new image will be uploaded to the HTTP server in the following steps to demonstrate the OTA update.
 
    <details open><summary><b>Using Eclipse IDE for ModusToolbox&trade;</b></summary>
 
@@ -376,33 +366,33 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
          ```
    </details>
 
-9. After a successful build, copy the *mtb-example-anycloud-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it to the *\<OTA Application>/scripts* directory.
+10. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it to the *\<OTA Application>/scripts* directory.
 
-10. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to `1.1.0`.
+11. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to **1.1.0**.
 
-11. The OTA application now finds the updated job document, downloads the new image, and places it in the secondary slot. Once the download is complete, a soft reset is issued. The MCUboot bootloader starts the image upgrade process. It will take approximately 15-20 minutes.
+12. The OTA application now finds the updated job document, downloads the new image, and places it in the secondary slot. Once the download is complete, a soft reset is issued. The MCUboot bootloader starts the image upgrade process. It will take approximately 15-20 minutes.
 
     **Figure 5. Image download**
 
     ![](images/downloading_new_image.png)
 
-12. After the image upgrade is successfully completed, observe that the user LED is now blinking at 5 Hz.
+13. After the image upgrade is successfully completed, observe that the user LED is now blinking at 5 Hz.
 
-13. To test the revert feature of MCUboot, send a bad image as the v1.2.0 OTA update. The bad image used in this example is an infinite loop. The watchdog timer will reset the bad image and upon reboot, MCUboot will revert the primary image back to v1.1.0 good image. Edit *\<OTA Application>/Makefile* and add `TEST_REVERT` to the `Defines` variable as shown:
+14. To test the revert feature of MCUboot, send a bad image as the v1.2.0 OTA update. The bad image used in this example is an infinite loop. The watchdog timer will reset the bad image and upon reboot, MCUboot will revert the primary image back to v1.1.0 good image. Edit *\<OTA Application>/Makefile* and add `TEST_REVERT` to the `Defines` variable as shown:
 
       ```
       DEFINES+=CY_RTOS_AWARE TEST_REVERT
       ```
 
-14. Edit the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to '2'.
+15. Edit the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to **2**.
 
-15. Build the application per Step 8.
+16. Build the application per Step 8.
 
-16. After a successful build, copy the *mtb-example-anycloud-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it into the *\<OTA Application>/scripts* directory.
+17. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it into the *\<OTA Application>/scripts* directory.
 
-17. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to `1.2.0`.
+18. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to **1.2.0**.
 
-18. The OTA application will now find this new v1.2.0 image and update to it. After the update, within a few seconds, the watchdog timer resets the devices. Upon reset, MCUboot reverts to the v1.1.0 good image.
+19. The OTA application will now find this new v1.2.0 image and update to it. After the update, within a few seconds, the watchdog timer resets the devices. Upon reset, MCUboot reverts to the v1.1.0 good image.
 
     **Figure 6. Reverting to good image**
 
@@ -413,9 +403,9 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
 ## Debugging
 
-You can debug the example to step through the code. In the IDE, use the **\<OTA Application> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For more details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.cypress.com/MTBEclipseIDEUserGuide).
+You can debug the example to step through the code. In the IDE, use the **\<OTA Application> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For more details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/dgdl/Infineon-Eclipse_IDE_for_ModusToolbox_User_Guide_1-UserManual-v01_00-EN.pdf?fileId=8ac78c8c7d718a49017d99bcb86331e8).
 
-**Note:** **(Only while debugging)** On the CM4 CPU, some code in `main()` may execute before the debugger halts at the beginning of `main()`. This means that some codes execute twice - once before the debugger stops execution, and again after the debugger resets the program counter to the beginning of `main()`. See [KBA231071](https://community.cypress.com/docs/DOC-21143) to learn about this and for the workaround.
+**Note:** **(Only while debugging)** On the CM4 CPU, some code in `main()` may execute before the debugger halts at the beginning of `main()`. This means that some codes execute twice - once before the debugger stops execution, and again after the debugger resets the program counter to the beginning of `main()`. See [KBA231071](https://community.infineon.com/t5/Knowledge-Base-Articles/PSoC-6-MCU-Code-in-main-executes-before-the-debugger-halts-at-the-first-line-of/ta-p/253856) to learn about this and for the workaround.
 
 ## Design and implementation
 
@@ -425,20 +415,21 @@ All the source files related to the two tasks are placed under the *\<OTA Applic
 
  File | Description
 :-----|:------
-*ota_task.c*| Contains the task and functions related to the OTA client
-*ota_task.h* | Contains the public interfaces for the OTA client task
-*led_task.c* | Contains the task and functions related to LED blinking
+*ota_task.c*| Contains the task and functions related to the OTA client.
+*ota_task.h* | Contains the public interfaces for the OTA client task.
+*led_task.c* | Contains the task and functions related to LED blinking.
 *led_task.h* | Contains the public interfaces for the LED blink task.
-*main.c* | Initializes the BSP and the retarget-io library, and creates the OTA client and LED blink tasks
-*ota_app_config.h* | Contains the OTA and Wi-Fi configuration macros such has SSID, password, MQTT broker details, certificates, and key
+*main.c* | Initializes the BSP and the retarget-io library, and creates the OTA client and LED blink tasks.
+*ota_app_config.h* | Contains the OTA and Wi-Fi configuration macros such has SSID, password, HTTP/HTTPS server details, certificates, and key.
+*heap_usage* | Contains the code for printing heap usage.
 
 All the scripts and configurations needed for this example are placed under the *\<OTA Application>/scripts/* directory:
 
  File | Description
- :-----|:------|
- *generate_ssl_cert.sh*| Shell script to generate the required self-signed CA, server, and client certificates|
-|*ota_update.json* | OTA job document |
-|*format_cert_key.py* | Python script to convert certificate/key to string format |
+:-----|:------
+*generate_ssl_cert.sh*| Shell script to generate the required self-signed CA, server, and client certificates.
+*ota_update.json* | OTA job document.
+*format_cert_key.py* | Python script to convert certificate/key to string format.
 
 <br>
 
@@ -452,36 +443,39 @@ When the OTA Agent receives an update, the new image is placed in the secondary 
 
 ![](images/ota_http_update_flow.png)
 
-For more details on the features and configurations offered by the [anycloud-ota](https://github.com/Infineon/anycloud-ota) library, see its [README](https://github.com/Infineon/anycloud-ota/blob/master/README.md).
+For more details on the features and configurations offered by the [ota-update](https://github.com/Infineon/ota-update) library, see its [README](https://github.com/Infineon/ota-update/blob/master/README.md).
 
 Both MCUboot and the application must have an identical understanding of the memory layout. Otherwise, the bootloader may consider an authentic image as invalid. For more details on the features and configurations of MCUboot-based bootloader, see the [README](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic/blob/master/README.md) of the [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-psoc6-mcuboot-basic) code example.
 
 ### Resources and settings
 
+
 **Table 1. Application resources**
 
-| Resource  |  Alias/object     |    Purpose     |
-| :-------  | :------------     | :------------  |
-| UART (HAL)|cy_retarget_io_uart_obj| UART HAL object used by Retarget-IO for Debug UART port  |
-| GPIO (HAL)| CYBSP_USER_LED    | User LED       |
+ Resource  |  Alias/object     |    Purpose
+ :------- | :------------    | :------------
+ UART (HAL)|cy_retarget_io_uart_obj| UART HAL object used by retarget-io for the debug UART port
+ GPIO (HAL)| CYBSP_USER_LED    | User LED      
+
+<br>
 
 ## Related resources
 
 Resources | Links
 ----------|----------
-Application notes  | [AN228571](https://www.cypress.com/AN228571) – Getting started with PSoC&trade; 6 MCU on ModusToolbox&trade; software <br>  [AN215656](https://www.cypress.com/AN215656) – PSoC&trade; 6 MCU: Dual-CPU system design
+Application notes  | [AN228571](https://www.infineon.com/dgdl/Infineon-AN228571_Getting_started_with_PSoC_6_MCU_on_ModusToolbox_software-ApplicationNotes-v06_00-EN.pdf?fileId=8ac78c8c7cdc391c017d0d36de1f66d1) – Getting started with PSoC&trade; 6 MCU on ModusToolbox&trade; software <br>  [AN215656](https://www.infineon.com/dgdl/Infineon-AN215656_PSoC_6_MCU_Dual-CPU_System_Design-ApplicationNotes-v09_00-EN.pdf?fileId=8ac78c8c7cdc391c017d0d3180c4655f) – PSoC&trade; 6 MCU: Dual-CPU system design
 Code examples  | [Using ModusToolbox&trade; software](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub
-Device documentation | [PSoC&trade; 6 MCU datasheets](https://www.cypress.com/search/all?f[0]=meta_type%3Atechnical_documents&f[1]=resource_meta_type%3A575&f[2]=field_related_products%3A114026) <br> [PSoC&trade; 6 technical reference manuals](https://www.cypress.com/search/all/PSoC%206%20Technical%20Reference%20Manual?f[0]=meta_type%3Atechnical_documents&f[1]=resource_meta_type%3A583)
-Development kits | Visit www.cypress.com/microcontrollers-mcus-kits and use the options in the **Select your kit** section to filter kits by *Product family* or *Features*.
+Device documentation | [PSoC&trade; 6 MCU datasheets](https://documentation.infineon.com/html/psoc6/bnm1651211483724.html) <br> [PSoC&trade; 6 technical reference manuals](https://documentation.infineon.com/html/psoc6/zrs1651212645947.html)
+Development kits | Select your kits from the [evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board) page
 Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSoC&trade; 6 peripheral driver library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware abstraction layer (HAL) library <br> [retarget-io](https://github.com/Infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port
-Middleware on GitHub  | [anycloud-ota](https://github.com/Infineon/anycloud-ota) – OTA library and docs <br> [wifi-mw-core](https://github.com/Infineon/wifi-mw-core) – Wi-Fi middleware core library and docs <br> [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSoC&trade; 6 MCU middleware
-Tools  | [Eclipse IDE for ModusToolbox&trade; software](https://www.cypress.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth® connectivity devices.
+Middleware on GitHub  | [ota-update](https://github.com/Infineon/ota-update) – OTA library and docs <br> [wifi-mw-core](https://github.com/Infineon/wifi-mw-core) – Wi-Fi middleware core library and docs <br> [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSoC&trade; 6 MCU middleware
+Tools  | [Eclipse IDE for ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth® connectivity devices.
 
 ## Other resources
 
-Infineon provides a wealth of data at www.Infineon.com to help you select the right device, and quickly and effectively integrate it into your design.
+Infineon provides a wealth of data at www.infineon.com to help you select the right device, and quickly and effectively integrate it into your design.
 
-For PSoC&trade; 6 MCU devices, see [How to design with PSoC&trade; 6 MCU - KBA223067](https://community.cypress.com/docs/DOC-14644) in the Cypress community.
+For PSoC&trade; 6 MCU devices, see [How to design with PSoC&trade; 6 MCU - KBA223067](https://community.infineon.com/t5/Knowledge-Base-Articles/How-to-Design-with-PSoC-6-MCU-KBA223067/ta-p/248857) in the Infineon community.
 
 
 ## Document history
@@ -494,6 +488,7 @@ Document title: *CE231585* – *Over-the-air firmware update using HTTPS*
  1.1.0   | Updated the configuration file to support MbedTLS v2.22.0
  2.0.0   | Update to:<br>1. Support anycloud-ota v4.X library. <br>2. Support swap upgrade with MCUboot. <br>3. Support local-web-server instead of mongoose
  3.0.0   | Update to support ModusToolbox&trade; software v2.4 and BSP v3.X<br /> Added support for CY8CEVAL-062S2-MUR-43439M2 and CY8CEVAL-062S2-LAI-4373M2 kits
+ 4.0.0   | Updated the example to use the new ota-update v1.0.0 library
 
 <br>
 
