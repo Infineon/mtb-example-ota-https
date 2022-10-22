@@ -265,7 +265,7 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
         return CY_OTA_CB_RSLT_OTA_STOP;
     }
 
-    state_string  = cy_ota_get_state_string(cb_data->state);
+    state_string  = cy_ota_get_state_string(cb_data->ota_agt_state);
     error_string  = cy_ota_get_error_string(cy_ota_get_last_error());
 
     print_heap_usage("In OTA Callback");
@@ -278,17 +278,17 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
 
         case CY_OTA_REASON_SUCCESS:
             printf(">> APP CB OTA SUCCESS state:%d %s last_error:%s\n\n",
-                    cb_data->state,
+                    cb_data->ota_agt_state,
                     state_string, error_string);
             break;
 
         case CY_OTA_REASON_FAILURE:
             printf(">> APP CB OTA FAILURE state:%d %s last_error:%s\n\n",
-                    cb_data->state, state_string, error_string);
+                    cb_data->ota_agt_state, state_string, error_string);
             break;
 
         case CY_OTA_REASON_STATE_CHANGE:
-            switch (cb_data->state)
+            switch (cb_data->ota_agt_state)
             {
                 case CY_OTA_STATE_NOT_INITIALIZED:
                 case CY_OTA_STATE_EXITING:

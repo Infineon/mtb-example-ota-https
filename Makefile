@@ -28,7 +28,14 @@
 # Basic Configuration
 ################################################################################
 
--include ./libs/mtb.mk 
+
+# Type of ModusToolbox Makefile Options include:
+#
+# COMBINED    -- Top Level Makefile usually for single standalone application
+# APPLICATION -- Top Level Makefile usually for multi project application
+# PROJECT     -- Project Makefile under Application
+#
+MTB_TYPE=COMBINED
 
 # Target board/hardware (BSP).
 # To change the target, it is recommended to use the Library manager
@@ -111,13 +118,15 @@ DEFINES += HTTP_MAX_RESPONSE_HEADERS_SIZE_BYTES=2048
 # Disable custom config header file
 DEFINES += HTTP_DO_NOT_USE_CUSTOM_CONFIG
 
-# CY8CPROTO-062-4343W board shares the same GPIO for the user button (SW2)
-# and the CYW4343W host wake up pin. Since this example uses the GPIO for
+# CY8CPROTO-062-4343W board shares the same GPIO for the user button (USER BTN1)
+# and the CYW4343W host wake up pin. Since this example can use the GPIO for  
 # interfacing with the user button, the SDIO interrupt to wake up the host is
 # disabled by setting CY_WIFI_HOST_WAKE_SW_FORCE to '0'.
-ifeq ($(TARGET), CY8CPROTO-062-4343W)
+# 
+# If you want the host wake up feature on CY8CPROTO-062-4343W board, change the GPIO pin 
+# for USER BTN in design/hardware & comment the below DEFINES line. For other
+# targets commenting the below DEFINES line is sufficient.
 DEFINES+=CY_WIFI_HOST_WAKE_SW_FORCE=0
-endif
 
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=hardfp
@@ -188,8 +197,14 @@ COMPONENTS+=OTA_PSOC_062
 
 # Set Platform type (added to defines and used when finding the linker script)
 # Ex: PSOC_062_2M, PSOC_062_1M, PSOC_062_512K
-OTA_PLATFORM=PSOC_062_2M
-OTA_FLASH_MAP?=$(SEARCH_ota-update)/configs/flashmap/psoc62_2m_ext_swap_single.json
+# Only one of the following two if conditions will be true
+OTA_PLATFORM=$(if $(filter PSOC6_02,$(DEVICE_COMPONENTS)),PSOC_062_2M,$(if $(filter PSOC6_03,$(DEVICE_COMPONENTS)),PSOC_062_512K))
+
+# Only one of the following two if conditions will be true
+OTA_FLASH_MAP=$(if $(filter PSOC6_02,$(DEVICE_COMPONENTS)),\
+                   $(SEARCH_ota-update)/configs/flashmap/psoc62_2m_ext_swap_single.json,\
+                   $(if $(filter PSOC6_03,$(DEVICE_COMPONENTS)),\
+                        $(SEARCH_ota-update)/configs/flashmap/psoc62_512k_xip_swap_single.json))
 
 # Change the version here or over-ride by setting an environment variable
 # before building the application.
@@ -217,17 +232,6 @@ ifeq ($(OTA_SUPPORT),1)
     CY_INTERNAL_FLASH_ERASE_VALUE=0x00
     CY_EXTERNAL_FLASH_ERASE_VALUE=0xFF
     
-    # Application MUST provide a flash map
-    ifneq ($(MAKECMDGOALS),getlibs)
-    ifneq ($(MAKECMDGOALS),get_app_info)
-    ifeq ($(OTA_FLASH_MAP),)
-    $(info "")
-    $(error Application makefile must define OTA_FLASH_MAP. For more info, see <ota-update>/configs/flashmap/MCUBoot_Build_Commands.md)
-    $(info "")
-    endif
-    endif
-    endif
-
     # Add OTA_PLATFORM in DEFINES for platform-specific code
     # ex: source/port_support/mcuboot/COMPONENT_OTA_PSOC_062/flash_qspi/flash_qspi.c
     DEFINES+=$(OTA_PLATFORM)
@@ -327,7 +331,7 @@ ifeq ($(OTA_SUPPORT),1)
 
     # This section needs to be before finding LINKER_SCRIPT_WILDCARD as we need the extension defined
     ifeq ($(TOOLCHAIN),GCC_ARM)
-        CY_ELF_TO_HEX="$(CY_CROSSPATH)/bin/arm-none-eabi-objcopy"
+        CY_ELF_TO_HEX=$(MTB_TOOLCHAIN_GCC_ARM__BASE_DIR)/bin/arm-none-eabi-objcopy
         CY_ELF_TO_HEX_OPTIONS="-O ihex"
         CY_ELF_TO_HEX_FILE_ORDER="elf_first"
         CY_TOOLCHAIN=GCC
@@ -335,15 +339,16 @@ ifeq ($(OTA_SUPPORT),1)
         LDFLAGS+="-Wl,--defsym,MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE),--defsym,FLASH_AREA_IMG_1_PRIMARY_START=$(FLASH_AREA_IMG_1_PRIMARY_START),--defsym,FLASH_AREA_IMG_1_PRIMARY_SIZE=$(FLASH_AREA_IMG_1_PRIMARY_SIZE)"
     else
     ifeq ($(TOOLCHAIN),IAR)
-        CY_ELF_TO_HEX=$(CY_COMPILER_IAR_DIR)/bin/ielftool
+        CY_ELF_TO_HEX=$(MTB_TOOLCHAIN_IAR__BASE_DIR)/bin/ielftool
         CY_ELF_TO_HEX_OPTIONS="--ihex"
         CY_ELF_TO_HEX_FILE_ORDER="elf_first"
         CY_TOOLCHAIN=$(TOOLCHAIN)
         CY_TOOLCHAIN_LS_EXT=icf
+        DEFINES+=CY_INIT_CODECOPY_ENABLE
         LDFLAGS+=--config_def MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE) --config_def FLASH_AREA_IMG_1_PRIMARY_START=$(FLASH_AREA_IMG_1_PRIMARY_START) --config_def FLASH_AREA_IMG_1_PRIMARY_SIZE=$(FLASH_AREA_IMG_1_PRIMARY_SIZE)
     else
     ifeq ($(TOOLCHAIN),ARM)
-        CY_ELF_TO_HEX=$(CY_CROSSPATH)/bin/fromelf
+        CY_ELF_TO_HEX=$(MTB_TOOLCHAIN_ARM__BASE_DIR)/bin/fromelf
         CY_ELF_TO_HEX_OPTIONS="--i32 --output"
         CY_ELF_TO_HEX_FILE_ORDER="hex_first"
         CY_TOOLCHAIN=GCC
@@ -355,20 +360,16 @@ ifeq ($(OTA_SUPPORT),1)
     endif #IAR
     endif #GCC_ARM
     
-    # Find Linker Script using wildcard
-    # Directory within ota-upgrade library
-    OTA_LINKER_SCRIPT_BASE_DIR=$(SEARCH_ota-update)/platforms/$(OTA_PLATFORM)/linker_scripts/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/ota
-    
     ifeq ($(CY_RUN_CODE_FROM_XIP),1)
         OTA_LINKER_SCRIPT_TYPE=_ota_xip
     else
         OTA_LINKER_SCRIPT_TYPE=_ota_int
     endif
-    
-    LINKER_SCRIPT_WILDCARD:=$(OTA_LINKER_SCRIPT_BASE_DIR)/*$(OTA_LINKER_SCRIPT_TYPE).$(CY_TOOLCHAIN_LS_EXT)
-    LINKER_SCRIPT:=$(wildcard $(LINKER_SCRIPT_WILDCARD))
 
-
+    # Find Linker Script using wildcard
+    # Directory within ota-upgrade library
+    LINKER_SCRIPT=$(wildcard $(SEARCH_ota-update)/platforms/$(OTA_PLATFORM)/linker_scripts/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/ota/*$(OTA_LINKER_SCRIPT_TYPE).$(CY_TOOLCHAIN_LS_EXT))
+                                   
     ###################################################################################################
     # OTA POST BUILD scripting
     ###################################################################################################
@@ -380,7 +381,7 @@ ifeq ($(OTA_SUPPORT),1)
     # output directory for use in the sign_script.bash
     OUTPUT_FILE_PATH:=$(CY_BUILD_LOC)/$(TARGET)/$(CONFIG)
     
-    CY_HEX_TO_BIN="$(CY_COMPILER_GCC_ARM_DIR)/bin/arm-none-eabi-objcopy"
+    CY_HEX_TO_BIN="$(MTB_TOOLCHAIN_GCC_ARM__OBJCOPY)"
     APP_BUILD_VERSION=$(OTA_APP_VERSION_MAJOR).$(OTA_APP_VERSION_MINOR).$(OTA_APP_VERSION_BUILD)
     
     # MCUBoot flash support location
@@ -475,6 +476,10 @@ ifeq ($(OTA_SUPPORT),1)
     ifneq ($(MAKECMDGOALS),get_app_info)
     ifneq ($(MAKECMDGOALS),printlibs)
     ifneq ($(FLASHMAP_PYTHON_SCRIPT),)
+    ifneq ($(OTA_FLASH_MAP),)
+    ifeq ($(CY_PYTHON_PATH),)
+        CY_PYTHON_PATH=$(shell which python)
+    endif
         $(info "flashmap.py $(CY_PYTHON_PATH) $(SEARCH_ota-update)/scripts/$(FLASHMAP_PYTHON_SCRIPT) -p $(FLASHMAP_PLATFORM) -i $(OTA_FLASH_MAP) > flashmap.mk")
         $(shell $(CY_PYTHON_PATH) $(SEARCH_ota-update)/scripts/$(FLASHMAP_PYTHON_SCRIPT) -p $(FLASHMAP_PLATFORM) -i $(OTA_FLASH_MAP) > flashmap.mk)
         flash_map_status=$(shell if [ -s "flashmap.mk" ]; then echo "success"; fi )
@@ -486,6 +491,7 @@ ifeq ($(OTA_SUPPORT),1)
             $(info include flashmap.mk)
             include ./flashmap.mk
         endif # flash_map_status
+    endif # OTA_FLASH_MAP
     endif # FLASHMAP_PYTHON_SCRIPT
     endif # NOT getlibs
     endif # NOT get_app_info

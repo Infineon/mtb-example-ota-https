@@ -8,26 +8,27 @@ Over-the-air update middleware library enables the OTA feature. See the [ota-upd
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-ota-https)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzE1ODUiLCJTcGVjIE51bWJlciI6IjAwMi0zMTU4NSIsIkRvYyBUaXRsZSI6Ik92ZXItdGhlLWFpciBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgSFRUUFMiLCJyaWQiOiJ5ZWt0IiwiRG9jIHZlcnNpb24iOiI0LjAuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiUFNPQyJ9)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzE1ODUiLCJTcGVjIE51bWJlciI6IjAwMi0zMTU4NSIsIkRvYyBUaXRsZSI6Ik92ZXItdGhlLWFpciBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgSFRUUFMiLCJyaWQiOiJ5ZWt0IiwiRG9jIHZlcnNpb24iOiI1LjAuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiUFNPQyJ9)
 
 ## Requirements
 
-- [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software) v2.4 or later
-- Board support package (BSP) minimum required version: 3.0.0
+- [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software) v3.0 or later (tested with v3.0)
+- Board support package (BSP) minimum required version: 4.0.0
 - Programming language: C
 - Associated parts: All [PSoC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu/) parts with SDIO interface, [AIROC™ CYW43xxx Wi-Fi & Bluetooth® combo chips](https://www.infineon.com/cms/en/product/wireless-connectivity/airoc-wi-fi-plus-bluetooth-combos)
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
 - GNU Arm® embedded compiler v10.3.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
-- Arm&reg; compiler v6.13 (`ARM`)
-- IAR C/C++ compiler v8.42.2 (`IAR`)
+- Arm&reg; compiler v6.16 (`ARM`)
+- IAR C/C++ compiler v9.30.1 (`IAR`)
 
 ## Supported kits (make variable 'TARGET')
 
 - [PSoC&trade; 6 Wi-Fi Bluetooth&reg; prototyping kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8cproto-062-4343w) (`CY8CPROTO-062-4343W`) - Default value of `TARGET`
 - [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; pioneer kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8ckit-062s2-43012) (`CY8CKIT-062S2-43012`)
 - [PSoC&trade; 62S2 evaluation kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8ceval-062s2) (`CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-MUR-43439M2`)
+- [PSoC&trade; 62S3 Wi-Fi Bluetooth&reg; prototyping kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8cproto-062s3-4343w/) (`CY8CPROTO-062S3-4343W`)
 
 ## Hardware setup
 
@@ -100,7 +101,7 @@ Argument | Description | Required/optional
 
 <br>
 
-The following example will clone the "[mtb-example-ota-https](https://github.com/Infineon/mtb-example-anycloud-ota-https)" application with the desired name "OtaHttps" configured for the *CY8CPROTO-062-4343W* BSP into the specified working directory, *C:/mtb_projects*:
+The following example will clone the "[mtb-example-ota-https](https://github.com/Infineon/mtb-example-ota-https)" application with the desired name "OtaHttps" configured for the *CY8CPROTO-062-4343W* BSP into the specified working directory, *C:/mtb_projects*:
 
    ```
    project-creator-cli --board-id CY8CPROTO-062-4343W --app-id mtb-example-ota-https --user-app-name OtaHttps --target-dir "C:/mtb_projects"
@@ -146,7 +147,14 @@ The [mtb-example-psoc6-mcuboot-basic](https://github.com/Infineon/mtb-example-ps
 
 2. The bootloader and OTA applications must have the same understanding of the memory layout. The memory layout is defined through JSON files. The ota-update library provides a set of predefined JSON files that can be readily used. Both the bootloader and OTA application must use the same JSON file.
 
-   The *\<mtb_shared>/ota-update/\<tag>/configs/flashmap/* folder contains the predefined flashmap JSON files. The files with prefix **psoc62_2m_** are supported by this example.
+   The *\<mtb_shared>/ota-update/\<tag>/configs/flashmap/* folder contains the pre-defined flashmap JSON files. The following files are supported by this example.
+
+   Target      | Supported JSON files
+   ----------- |----------------------------------
+   CY8CPROTO-062-4343W <br> CY8CKIT-062S2-43012 <br> CY8CEVAL-062S2-MUR-43439M2 <br> CY8CEVAL-062S2-LAI-4373M2 | All 4 targets support the following flashmaps - <br> psoc62_2m_ext_overwrite_single.json <br> psoc62_2m_ext_swap_single.json <br> psoc62_2m_int_overwrite_single.json <br> psoc62_2m_int_swap_single.json
+   CY8CPROTO-062S3-4343W | psoc62_512k_xip_swap_single.json
+
+   <br>
 
    Copy the required flashmap JSON file and paste it in the *\<bootloader_cm0p>/flashmap* folder.
 
@@ -273,9 +281,18 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
 2. Open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
 
-3. Modify the `OTA_FLASH_MAP` variable in the *\<OTA Application>/Makefile* to change the JSON file name to match the selection made while programming the bootloader application.
+3. Modify the `OTA_PLATFORM` variable in the *\<OTA Application>/Makefile* based on the target you have selected. Currently in the Makefile a conditional if-else block is used to automatically select a value based on the target selected. You can remove it and directly assign a value as per the table shown below.
 
-4. Edit the *\<OTA Application>/source/ota_app_config.h* file to configure your OTA application:
+   Target      | `OTA_PLATFORM` value
+   ----------- |----------------------------------
+   CY8CPROTO-062-4343W <br> CY8CKIT-062S2-43012 <br> CY8CEVAL-062S2-MUR-43439M2 <br> CY8CEVAL-062S2-LAI-4373M2 | PSOC_062_2M
+   CY8CPROTO-062S3-4343W | PSOC_062_512K
+
+   <br>
+
+4. Modify the `OTA_FLASH_MAP` variable in the *\<OTA Application>/Makefile* to change the JSON file name to match the selection made while programming the bootloader application. Currently in the Makefile a conditional if-else block is used to automatically select a default flash map file based on the target selected. You can remove it and directly assign the path of the required flash map file to the `OTA_FLASH_MAP` variable.
+
+5. Edit the *\<OTA Application>/source/ota_app_config.h* file to configure your OTA application:
 
    1. Modify the connection configuration such as the `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY` macros to match the settings of your Wi-Fi network. Make sure that the device running the HTTP server and the kit are connected to the same network.
 
@@ -305,7 +322,7 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
       Note that the local-web-server does not authenticate a client through the certificate; this is the reason why the client certificate and client key are not added here. If you use some other server, which can do client-side authentication, add the *http_client.crt* and *http_client.key* files. Also, set the `USING_CLIENT_CERTIFICATE` and `USING_CLIENT_KEY` macros to value **true**.
 
-5. Edit the job document (*\<OTA Application>/scripts/ota_update.json*):
+6. Edit the job document (*\<OTA Application>/scripts/ota_update.json*):
 
    1. Modify the value of `Server` to match the IP address of your HTTP server.
 
@@ -313,7 +330,7 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
    3. In Step 3, if the code example has been configured to work in non-TLS mode: Set the value of `Port` to **8080**, and `Connection` to **HTTP**.
 
-6. Build and program the board.
+7. Build and program the board.
 
    <details open><summary><b>Using Eclipse IDE for ModusToolbox&trade;</b></summary>
 
@@ -341,11 +358,11 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
 
    ![](images/connection_http_server.png)
 
-7. The job document placed in the *\<OTA Application>/scripts/* folder has a value of `Version` as **1.0.0**. Because the OTA application version and the available update version are the same, the update will not happen.
+8. The job document placed in the *\<OTA Application>/scripts/* folder has a value of `Version` as **1.0.0**. Because the OTA application version and the available update version are the same, the update will not happen.
 
-8. Modify the value of the `BLINKY_DELAY_MS` macro to **(100)** in the *\<OTA Application>/source/led_task.c* file and change the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to **1**.
+9. Modify the value of the `BLINKY_DELAY_MS` macro to **(100)** in the *\<OTA Application>/source/led_task.c* file and change the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to **1**.
 
-9. Build the app (**DO NOT** program it to the kit). This new image will be uploaded to the HTTP server in the following steps to demonstrate the OTA update.
+10. Build the app (**DO NOT** program it to the kit). This new image will be uploaded to the HTTP server in the following steps to demonstrate the OTA update.
 
    <details open><summary><b>Using Eclipse IDE for ModusToolbox&trade;</b></summary>
 
@@ -366,33 +383,33 @@ The root directory of the OTA application is referred to as *\<OTA Application>*
          ```
    </details>
 
-10. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it to the *\<OTA Application>/scripts* directory.
+11. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it to the *\<OTA Application>/scripts* directory.
 
-11. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to **1.1.0**.
+12. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to **1.1.0**.
 
-12. The OTA application now finds the updated job document, downloads the new image, and places it in the secondary slot. Once the download is complete, a soft reset is issued. The MCUboot bootloader starts the image upgrade process. It will take approximately 15-20 minutes.
+13. The OTA application now finds the updated job document, downloads the new image, and places it in the secondary slot. Once the download is complete, a soft reset is issued. The MCUboot bootloader starts the image upgrade process. It will take approximately 15-20 minutes.
 
     **Figure 5. Image download**
 
     ![](images/downloading_new_image.png)
 
-13. After the image upgrade is successfully completed, observe that the user LED is now blinking at 5 Hz.
+14. After the image upgrade is successfully completed, observe that the user LED is now blinking at 5 Hz.
 
-14. To test the revert feature of MCUboot, send a bad image as the v1.2.0 OTA update. The bad image used in this example is an infinite loop. The watchdog timer will reset the bad image and upon reboot, MCUboot will revert the primary image back to v1.1.0 good image. Edit *\<OTA Application>/Makefile* and add `TEST_REVERT` to the `Defines` variable as shown:
+15. To test the revert feature of MCUboot, send a bad image as the v1.2.0 OTA update. The bad image used in this example is an infinite loop. The watchdog timer will reset the bad image and upon reboot, MCUboot will revert the primary image back to v1.1.0 good image. Edit *\<OTA Application>/Makefile* and add `TEST_REVERT` to the `Defines` variable as shown:
 
       ```
       DEFINES+=CY_RTOS_AWARE TEST_REVERT
       ```
 
-15. Edit the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to **2**.
+16. Edit the app version in the *\<OTA Application>/Makefile* by setting `APP_VERSION_MINOR` to **2**.
 
-16. Build the application per Step 8.
+17. Build the application per Step 8.
 
-17. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it into the *\<OTA Application>/scripts* directory.
+18. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA Application>/build/\<KIT>/Debug* and paste it into the *\<OTA Application>/scripts* directory.
 
-18. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to **1.2.0**.
+19. Edit the *\<OTA Application>/scripts/ota_update.json* file to modify the value of `Version` to **1.2.0**.
 
-19. The OTA application will now find this new v1.2.0 image and update to it. After the update, within a few seconds, the watchdog timer resets the devices. Upon reset, MCUboot reverts to the v1.1.0 good image.
+20. The OTA application will now find this new v1.2.0 image and update to it. After the update, within a few seconds, the watchdog timer resets the devices. Upon reset, MCUboot reverts to the v1.1.0 good image.
 
     **Figure 6. Reverting to good image**
 
@@ -489,6 +506,7 @@ Document title: *CE231585* – *Over-the-air firmware update using HTTPS*
  2.0.0   | Update to:<br>1. Support anycloud-ota v4.X library. <br>2. Support swap upgrade with MCUboot. <br>3. Support local-web-server instead of mongoose
  3.0.0   | Update to support ModusToolbox&trade; software v2.4 and BSP v3.X<br /> Added support for CY8CEVAL-062S2-MUR-43439M2 and CY8CEVAL-062S2-LAI-4373M2 kits
  4.0.0   | Updated the example to use the new ota-update v1.0.0 library
+ 5.0.0   | Updated the example to use ota-update v1.1.0 library<br /> Updated to support ModusToolbox&trade; software v3.0<br /> Added support for CY8CPROTO-062S3-4343W kit
 
 <br>
 

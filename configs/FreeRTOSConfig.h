@@ -219,6 +219,12 @@ extern void vApplicationSleep( uint32_t xExpectedIdleTime );
 #endif
 
 /* Deep Sleep Latency Configuration */
+#if defined (CY_DEVICE_PSOC6A512K) && defined (DEBUG)
+#undef CY_CFG_PWR_DEEPSLEEP_LATENCY
+#define CY_CFG_PWR_DEEPSLEEP_LATENCY            10UL
+#endif
+
+/* Deep Sleep Latency Configuration */
 #if( CY_CFG_PWR_DEEPSLEEP_LATENCY > 0 )
 #define configEXPECTED_IDLE_TIME_BEFORE_SLEEP   CY_CFG_PWR_DEEPSLEEP_LATENCY
 #endif
