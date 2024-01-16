@@ -1,3 +1,8 @@
-$(SEARCH_bluetooth-freertos)
-$(SEARCH_btstack)
-$(SEARCH_btstack-integration)
+# Documentation
+images
+
+# Exports, Project settings
+.mtbLaunchConfigs
+.settings
+.vscode
+
