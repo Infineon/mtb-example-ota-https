@@ -6,3 +6,8 @@ images
 .settings
 .vscode
 
+# Below folder are not needed for the CE.
+$(SEARCH_bluetooth-freertos)
+$(SEARCH_btstack)
+$(SEARCH_btstack-integration)
+
