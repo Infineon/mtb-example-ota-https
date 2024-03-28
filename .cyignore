@@ -7,7 +7,6 @@ images
 .vscode
 
 # Below folder are not needed for the CE.
-$(SEARCH_bluetooth-freertos)
-$(SEARCH_btstack)
-$(SEARCH_btstack-integration)
-
+$(SEARCH_aws-iot-device-sdk-embedded-C)/libraries/standard/coreMQTT
+$(SEARCH_aws-iot-device-sdk-embedded-C)/libraries/aws/ota-for-aws-iot-embedded-sdk
+$(SEARCH_aws-iot-device-sdk-port)/source/ota

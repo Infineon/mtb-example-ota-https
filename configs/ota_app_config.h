@@ -1,9 +1,12 @@
 /******************************************************************************
-* File Name: ota_app_config.h
+* File Name:   ota_app_config.h
 *
-* Description: Contains all the configurations required for the OTA App.
+* Description: This file contains the OTA application level configuration macros.
 *
-********************************************************************************
+* Related Document: See README.md
+*
+*
+*******************************************************************************
 * Copyright 2020-2024, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *

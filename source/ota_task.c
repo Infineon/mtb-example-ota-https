@@ -40,34 +40,31 @@
 #include "cyhal.h"
 #include "cybsp.h"
 #include "cy_retarget_io.h"
-
-/* Wi-Fi connection manager header files. */
+/* Wi-Fi connection manager */
 #include "cy_wcm.h"
-
-/* IoT SDK, Secure Sockets, and MQTT initialization */
+/* IoT SDK, Secure Sockets, and HTTP initialization */
 #include "cy_tcpip_port_secure_sockets.h"
-
-/* FreeRTOS header file */
+/* FreeRTOS */
 #include <FreeRTOS.h>
 #include <task.h>
-
-#include "cy_log.h"
-
+/* OTA app specific configuration */
+#include "ota_app_config.h"
 /* OTA API */
 #include "cy_ota_api.h"
-#include "ota_serial_flash.h"
-
-/* App specific configuration */
-#include "ota_app_config.h"
+/* OTA storage api */
+#include "cy_ota_storage_api.h"
 
 /*******************************************************************************
 * Macros
 ********************************************************************************/
 /* MAX connection retries to join WI-FI AP */
-#define MAX_CONNECTION_RETRIES              (10u)
+#define MAX_CONNECTION_RETRIES              (10)
 
 /* Wait between connection retries */
 #define WIFI_CONN_RETRY_DELAY_MS            (500)
+
+/* Application ID */
+#define APP_ID                              (0)  
 
 /*******************************************************************************
 * Forward declaration
@@ -122,9 +119,21 @@ cy_ota_agent_params_t ota_agent_params =
 {
     .cb_func = ota_callback,
     .cb_arg = &ota_context,
-    .reboot_upon_completion = 1,
+    .reboot_upon_completion = 1, /* Reboot after completing OTA with success. */
     .validate_after_reboot = 1,
     .do_not_send_result = 1
+};
+
+/* OTA storage interface callbacks */
+cy_ota_storage_interface_t ota_interfaces =
+{
+   .ota_file_open            = cy_ota_storage_open,
+   .ota_file_read            = cy_ota_storage_read,
+   .ota_file_write           = cy_ota_storage_write,
+   .ota_file_close           = cy_ota_storage_close,
+   .ota_file_verify          = cy_ota_storage_verify,
+   .ota_file_validate        = cy_ota_storage_image_validate,
+   .ota_file_get_app_info    = cy_ota_storage_get_app_info
 };
 
 /*******************************************************************************
@@ -143,44 +152,41 @@ cy_ota_agent_params_t ota_agent_params =
 void ota_task(void *args)
 {
 
-    /* default for OTA logging to NOTiCE */
-    cy_ota_set_log_level(CY_LOG_WARNING);
+    /* default for OTA logging to NOTICE */
+    cy_ota_set_log_level(CY_LOG_NOTICE);
 
-#if defined(OTA_USE_EXTERNAL_FLASH)
-    /* We need to init from every ext flash write
-     * See ota_serial_flash.h
-     */
-
-    /* initialize SMIF interface */
-    printf("call ota_smif_initialize()\n");
-    if (ota_smif_initialize() != CY_RSLT_SUCCESS)
+    /* initialize OTA storage */
+    if (CY_RSLT_SUCCESS != cy_ota_storage_init())
     {
-        printf("ERROR returned from ota_smif_initialize()!!!!!\n");
+        printf("\n Initializing ota storage failed.\n");
+        CY_ASSERT(0);
     }
-#endif /* OTA_USE_EXTERNAL_FLASH */
 
+#ifndef TEST_REVERT
     /* Validate the update so we do not revert */
-    if(cy_ota_storage_validated() != CY_RSLT_SUCCESS)
+    if(CY_RSLT_SUCCESS != cy_ota_storage_image_validate(APP_ID))
     {
         printf("\n Failed to validate the update.\n");
+        CY_ASSERT(0);
     }
+#endif
 
     /* Connect to Wi-Fi AP */
-    if( connect_to_wifi_ap() != CY_RSLT_SUCCESS )
+    if(CY_RSLT_SUCCESS != connect_to_wifi_ap())
     {
         printf("\n Failed to connect to Wi-FI AP.\n");
         CY_ASSERT(0);
     }
 
     /* Initialize underlying support code that is needed for OTA and HTTP */
-    if (cy_awsport_network_init() != CY_RSLT_SUCCESS)
+    if (CY_RSLT_SUCCESS != cy_awsport_network_init())
     {
-        printf("\n Secure sockets initialization failed.\n");
+        printf("\n Initializing secure sockets failed.\n");
         CY_ASSERT(0);
     }
 
     /* Initialize and start the OTA agent */
-    if( cy_ota_agent_start(&ota_network_params, &ota_agent_params, &ota_context) != CY_RSLT_SUCCESS )
+    if(CY_RSLT_SUCCESS != cy_ota_agent_start(&ota_network_params, &ota_agent_params, &ota_interfaces, &ota_context))
     {
         printf("\n Initializing and starting the OTA agent failed.\n");
         CY_ASSERT(0);
@@ -202,14 +208,22 @@ cy_rslt_t connect_to_wifi_ap(void)
     cy_wcm_config_t wifi_config = { .interface = CY_WCM_INTERFACE_TYPE_STA};
     cy_wcm_connect_params_t wifi_conn_param;
     cy_wcm_ip_address_t ip_address;
-    cy_rslt_t result;
+    cy_rslt_t result = CY_RSLT_TYPE_ERROR;
 
     /* Variable to track the number of connection retries to the Wi-Fi AP specified
      * by WIFI_SSID macro. */
     uint32_t conn_retries = 0;
 
     /* Initialize Wi-Fi connection manager. */
-    cy_wcm_init(&wifi_config);
+    result = cy_wcm_init(&wifi_config);
+
+    if (CY_RSLT_SUCCESS != result)
+    {
+        printf("\n Initializing WCM failed.\n");
+        CY_ASSERT(0);
+    }
+
+    printf("\n Successfully initialized WCM.\n");
 
      /* Set the Wi-Fi SSID, password and security type. */
     memset(&wifi_conn_param, 0, sizeof(cy_wcm_connect_params_t));
@@ -217,12 +231,15 @@ cy_rslt_t connect_to_wifi_ap(void)
     memcpy(wifi_conn_param.ap_credentials.password, WIFI_PASSWORD, sizeof(WIFI_PASSWORD));
     wifi_conn_param.ap_credentials.security = WIFI_SECURITY;
 
+    printf( "Connecting to Wi-Fi network '%s'.\n",
+                    wifi_conn_param.ap_credentials.SSID);
+
     /* Connect to the Wi-Fi AP */
     for(conn_retries = 0; conn_retries < MAX_CONNECTION_RETRIES; conn_retries++)
     {
         result = cy_wcm_connect_ap( &wifi_conn_param, &ip_address );
 
-        if (result == CY_RSLT_SUCCESS)
+        if (CY_RSLT_SUCCESS == result)
         {
             printf( "Successfully connected to Wi-Fi network '%s'.\n",
                     wifi_conn_param.ap_credentials.SSID);

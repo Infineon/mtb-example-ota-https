@@ -9,8 +9,7 @@
 * will copy the new image over to the primary slot and run the application.
 *
 * Related Document: See Readme.md
-*
-*******************************************************************************
+********************************************************************************
 * Copyright 2020-2024, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
@@ -87,21 +86,44 @@ TaskHandle_t led_task_handle;
  *
  * Return:
  *  int
- * 
+ *
  *******************************************************************************/
 int main(void)
 {
-    cy_rslt_t result ;
-    cyhal_wdt_t wdt_obj;
+    cy_rslt_t result = CY_RSLT_TYPE_ERROR;
+    
+    /* Prevent the WDT from timing out and resetting the device. */
+    /* Watchdog timer started by the bootloader */
+    cyhal_wdt_kick(NULL);
 
     /* Initialize the board support package */
-    result = cybsp_init() ;
-    CY_ASSERT(result == CY_RSLT_SUCCESS);
+    result = cybsp_init();
+
+    /* Board init failed. Stop program execution */
+    if (CY_RSLT_SUCCESS != result)
+    {
+        CY_ASSERT(0);
+    }
 
     /* Initialize retarget-io to use the debug UART port */
     result = cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX,
                                  CY_RETARGET_IO_BAUDRATE);
-    CY_ASSERT(result == CY_RSLT_SUCCESS);
+
+    /* Retarget-io init failed. Stop program execution */
+    if (CY_RSLT_SUCCESS != result)
+    {
+        CY_ASSERT(0);
+    }
+
+ #ifdef XMC7200
+    /* Disables and invalidate instruction cache and disable, clean and invalidate data cache for XMC7200 */ 
+    SCB_DisableICache();
+    SCB_DisableDCache();
+
+    /* Initialize the XMC7200 flash */
+    Cy_Flash_Init();
+    Cy_Flashc_MainWriteEnable();
+ #endif
 
     /* To avoid compiler warning */
     (void)result;
@@ -124,10 +146,9 @@ int main(void)
     while(true);
 #endif
 
-    /* Clear watchdog timer so that it doesn't trigger a reset */
-    cyhal_wdt_init(&wdt_obj, cyhal_wdt_get_max_timeout_ms());
-    cyhal_wdt_free(&wdt_obj);
-
+    /* Update watchdog timer to mark successful start up of application */
+    /* Watchdog timer started by the bootloader */
+    cyhal_wdt_free(NULL);
     printf("\nWatchdog timer started by the bootloader is now turned off!!!\n\n");
 
     /* Create the tasks */

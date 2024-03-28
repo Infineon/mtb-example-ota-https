@@ -1,18 +1,43 @@
-/*******************************************************************************
- *\copyright
- *$ Copyright 2020-YEAR Cypress Semiconductor Apache2 $
- *******************************************************************************/
-
-/**
- * \addtogroup group_cy_ota Cypress Over The Air (OTA) API
- * \{
- * \defgroup group_ota_config OTA Configurations
- */
-/**
- *
- *  Customer overrides for the OTA library.
- *
- **********************************************************************/
+/******************************************************************************
+* File Name:   cy_ota_config.h
+*
+* Description: This file contains the OTA middleware level configuration macros.
+*
+* Related Document: See README.md
+*
+*
+*******************************************************************************
+* Copyright 2020-2024, Cypress Semiconductor Corporation (an Infineon company) or
+* an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
+*
+* This software, including source code, documentation and related
+* materials ("Software") is owned by Cypress Semiconductor Corporation
+* or one of its affiliates ("Cypress") and is protected by and subject to
+* worldwide patent protection (United States and foreign),
+* United States copyright laws and international treaty provisions.
+* Therefore, you may use this Software only as provided in the license
+* agreement accompanying the software package from which you
+* obtained this Software ("EULA").
+* If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
+* non-transferable license to copy, modify, and compile the Software
+* source code solely for use in connection with Cypress's
+* integrated circuit products.  Any reproduction, modification, translation,
+* compilation, or representation of this Software except as specified
+* above is prohibited without the express written permission of Cypress.
+*
+* Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. Cypress
+* reserves the right to make changes to the Software without notice. Cypress
+* does not assume any liability arising out of the application or use of the
+* Software or any product or circuit described in the Software. Cypress does
+* not authorize its products for use in any products where a malfunction or
+* failure of the Cypress product may reasonably be expected to result in
+* significant property damage, injury or death ("High Risk Product"). By
+* including Cypress's product in a High Risk Product, the manufacturer
+* of such system or application assumes all risk of such use and in doing
+* so agrees to indemnify Cypress against all liability.
+*******************************************************************************/
 
 #ifndef CY_OTA_CONFIG_H__
 #define CY_OTA_CONFIG_H__
@@ -105,13 +130,13 @@ extern "C" {
  * @brief HTTP timeout for receiving messages
  *
  */
-#define CY_OTA_HTTP_TIMEOUT_RECEIVE         (5000)          /* 5 second receive timeout. */
+#define CY_OTA_HTTP_TIMEOUT_RECEIVE         (2000)          /* 2 second receive timeout. */
 
 /**
  * @brief HTTP timeout for sending messages
  *
  */
-#define CY_OTA_HTTP_TIMEOUT_SEND            (3000)          /* 3 second send timeout. */
+#define CY_OTA_HTTP_TIMEOUT_SEND            (2000)          /* 2 second send timeout. */
 /**********************************************************************
  * Message Defines
  **********************************************************************/
@@ -205,19 +230,6 @@ extern "C" {
 \"BoardName\": \"CY8CPROTO_062_4343W\", \
 \"Version\": \"%d.%d.%d\" \
 }"
-
-/**
- * @brief Device JSON doc to respond to MQTT Publisher
- *
- * Used with sprintf() to create the JSON message
- * Override if desired by defining in cy_ota_config.h.
- */
-#define CY_OTA_MQTT_RESULT_JSON \
-"{\
-\"Message\":\"%s\", \
-\"UniqueTopicName\": \"%s\"\
-}"
-
 /**
  * @brief Device JSON doc to respond to HTTP Server
  *
@@ -253,41 +265,6 @@ extern "C" {
     "Content-Length:%ld \r\n" \
     "\r\n%s"
 #endif
-
-/**********************************************************************
- * MQTT Defines
- **********************************************************************/
-
-/**
- * @brief The keep-alive interval for MQTT
- * @brief Maximum number of MQTT Topics
- *
- * An MQTT ping request will be sent periodically at this interval.
- * The maximum number of Topics for subscribing.
- */
-#define CY_OTA_MQTT_KEEP_ALIVE_SECONDS          (60)                /* 60 second keep-alive */
-
-/**
- * @brief Maximum number of MQTT Topics
- *
- * The maximum number of Topics for subscribing.
- */
-#define CY_OTA_MQTT_MAX_TOPICS                  (2)
-
-/**
- * @brief TOPIC prefix
- *
- * Used as prefix for "Will" and "Acknowledgement" Messages
- */
-#define CY_OTA_MQTT_TOPIC_PREFIX                "cy_ota_device"
-
-/**
- * @brief The first characters in the client identifier.
- *
- * A timestamp is appended to this prefix to create a unique
- *   client identifer for each connection.
- */
-#define CY_OTA_MQTT_CLIENT_ID_PREFIX            "cy_device"
 
 
 /** \} group_ota_config */

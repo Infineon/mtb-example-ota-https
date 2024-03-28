@@ -23,7 +23,6 @@
 # limitations under the License.
 ################################################################################
 
-
 ################################################################################
 # Basic Configuration
 ################################################################################
@@ -41,9 +40,6 @@ MTB_TYPE=COMBINED
 # ('make library-manager' from command line), which will also update Eclipse IDE launch
 # configurations.
 TARGET=CY8CPROTO-062S2-43439
-
-# Core processor
-CORE?=CM4
 
 # Name of application (used to derive name of final linked file).
 #
@@ -73,6 +69,30 @@ CONFIG=Debug
 # If set to "true" or "1", display full command-lines when building.
 VERBOSE=
 
+###############################################################################
+#
+# User configuration
+#
+###############################################################################
+
+# Set Platform type
+# E.g. PLATFORM=PSOC_062_512K, PLATFORM=PSOC_062_2M,  PLATFORM=XMC7200
+ifeq ($(TARGET), APP_KIT_XMC72_EVK_MUR_43439M2)
+PLATFORM=XMC7200
+else
+ifeq ($(TARGET), APP_CY8CPROTO-062S3-4343W)
+PLATFORM=PSOC_062_512K
+else
+PLATFORM=PSOC_062_2M
+endif
+endif
+
+# Core processor
+ifneq ($(PLATFORM), XMC7200)
+CORE=CM4
+else
+CORE=CM7
+endif
 
 ################################################################################
 # Advanced Configuration
@@ -88,10 +108,14 @@ VERBOSE=
 # ... then code in directories named COMPONENT_foo and COMPONENT_bar will be
 # added to the build
 #
-COMPONENTS=FREERTOS LWIP MBEDTLS SECURE_SOCKETS OTA_HTTP
+COMPONENTS=FREERTOS LWIP MBEDTLS SECURE_SOCKETS
 
 # Like COMPONENTS, but disable optional code that was enabled by default.
-DISABLE_COMPONENTS=
+ifneq ($(PLATFORM), XMC7200)
+DISABLE_COMPONENTS=CM0P_SLEEP CM0P_SECURE CM0P_CRYPTO CM0P_BLESS
+else
+DISABLE_COMPONENTS=XMC7xDUAL_CM0P_SLEEP XMC7x_CM0P_SLEEP
+endif
 
 # By default the build system automatically looks in the Makefile's directory
 # tree for source code and builds it. The SOURCES variable can be used to
@@ -104,17 +128,10 @@ SOURCES=
 INCLUDES=./configs
 
 # Custom configuration of mbedtls library.
-MBEDTLSFLAGS = MBEDTLS_USER_CONFIG_FILE='"configs/mbedtls_user_config.h"'
-
-# Add additional defines to the build process (without a leading -D).
-DEFINES=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF 
+MBEDTLSFLAGS=MBEDTLS_USER_CONFIG_FILE='"mbedtls_user_config.h"'
+DEFINES+=$(MBEDTLSFLAGS)
+DEFINES+=CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF
 DEFINES+=CY_RTOS_AWARE
-# Set user agent name in all request headers with the specified name
-DEFINES += HTTP_USER_AGENT_VALUE="\"anycloud-http-client\""
-# Configure response header maximum length with the specified value - HTTP
-DEFINES += HTTP_MAX_RESPONSE_HEADERS_SIZE_BYTES=2048
-# Disable custom config header file
-DEFINES += HTTP_DO_NOT_USE_CUSTOM_CONFIG
 
 # CY8CPROTO-062-4343W board shares the same GPIO for the user button (USER BTN1)
 # and the CYW4343W host wake up pin. Since this example can use the GPIO for  
@@ -148,16 +165,21 @@ CXXFLAGS=
 ASFLAGS=
 
 # Additional / custom linker flags.
-ifeq ($(TOOLCHAIN),GCC_ARM)
+ifeq ($(TOOLCHAIN), GCC_ARM)
 LDFLAGS=-Wl,--undefined=uxTopUsedPriority
+CY_TOOLCHAIN_LS_EXT=ld
 else
-ifeq ($(TOOLCHAIN),IAR)
+ifeq ($(TOOLCHAIN), IAR)
 LDFLAGS=--keep uxTopUsedPriority
+CY_TOOLCHAIN_LS_EXT=icf
 else
-ifeq ($(TOOLCHAIN),ARM)
+ifeq ($(TOOLCHAIN), ARM)
 LDFLAGS=--undefined=uxTopUsedPriority
+LDFLAGS+=--diag_suppress=L6314W
+CY_TOOLCHAIN_LS_EXT=sct
 else
 LDFLAGS=
+$(error Selected toolchain is not supported at this moment)
 endif
 endif
 endif
@@ -184,226 +206,107 @@ POSTBUILD=
 # NOTE: Extra code must be called from your app to initialize the OTA middleware.
 OTA_SUPPORT=1
 
-# HTTP Support
+ifeq ($(OTA_SUPPORT),1)
+
+# Enable HTTP Support
 OTA_HTTP_SUPPORT=1
-OTA_MQTT_SUPPORT=0
-OTA_BT_SUPPORT=0
 
-# Component for adding platform-specific code
-# ex: source/port_support/mcuboot/COMPONENT_OTA_PSOC_062/flash_qspi/flash_qspi.c
+# Set OTA platform type (added to defines and used when finding the linker script)
+# E.g. PSOC_062_2M, PSOC_062_512K and XMC7200
+OTA_PLATFORM=$(PLATFORM)
+
+# XIP_MODE only support for PSOC_062_512K platform
+XIP_MODE=XIP
+
+# Flashmap JSON file name
+ifneq ($(PLATFORM), XMC7200)
+ifeq ($(PLATFORM), PSOC_062_512K)
+ifeq ($(XIP_MODE), XIP)
+OTA_FLASH_MAP=flashmap/psoc62_512k_xip_swap_single.json
+LD_SUFFIX=_xip
+endif
+else
+OTA_FLASH_MAP=flashmap/psoc62_2m_ext_swap_single.json
+endif
+else
+OTA_FLASH_MAP=flashmap/xmc7200_int_swap_single.json
+endif
+
+ifneq ($(PLATFORM), XMC7200)
+# To enable QSPI support
 COMPONENTS+=OTA_PSOC_062
+endif
 
-# Set Platform type (added to defines and used when finding the linker script)
-# Ex: PSOC_062_2M, PSOC_062_1M, PSOC_062_512K
-# Only one of the following two if conditions will be true
-OTA_PLATFORM=$(if $(filter PSOC6_02,$(DEVICE_COMPONENTS)),PSOC_062_2M,$(if $(filter PSOC6_03,$(DEVICE_COMPONENTS)),PSOC_062_512K))
+# Starting from the 4.0 version of the ota-update library, the library is now fully separated from the MCUBootloader. 
+# This means that it can function independently and work with any bootloader.
+# This code example only supports MCUboot at this moment.
+CY_BOOTLOADER=MCUBOOT
+COMPONENTS+=$(CY_BOOTLOADER)
 
-# Only one of the following two if conditions will be true
-OTA_FLASH_MAP=$(if $(filter PSOC6_02,$(DEVICE_COMPONENTS)),\
-                   $(SEARCH_ota-update)/configs/flashmap/psoc62_2m_ext_swap_single.json,\
-                   $(if $(filter PSOC6_03,$(DEVICE_COMPONENTS)),\
-                        $(SEARCH_ota-update)/configs/flashmap/psoc62_512k_xip_swap_single.json))
+ifneq ($(CY_BOOTLOADER), MCUBOOT)
+$(error This code example only supports MCUboot based bootloader at this moment)
+endif
 
+# Set the version of the app using the following three variables.
+# This version information is passed to the Python module "imgtool" or "cysecuretools" while
+# signing the image in the post build step. Default values are set as follows.
 # Change the version here or over-ride by setting an environment variable
 # before building the application.
 #
 # export APP_VERSION_MAJOR=2
 #
-OTA_APP_VERSION_MAJOR?=1
-OTA_APP_VERSION_MINOR?=0
-OTA_APP_VERSION_BUILD?=0
+APP_VERSION_MAJOR?=1
+APP_VERSION_MINOR?=0
+APP_VERSION_BUILD?=0
 
-###############################################################################
-#
-# OTA Functionality support
-#
-###############################################################################
-ifeq ($(OTA_SUPPORT),1)
+DEFINES+=OTA_SUPPORT=1\
+         APP_VERSION_MAJOR=$(APP_VERSION_MAJOR)\
+         APP_VERSION_MINOR=$(APP_VERSION_MINOR)\
+         APP_VERSION_BUILD=$(APP_VERSION_BUILD)
 
-    # Build location local to this root directory.
-    CY_BUILD_LOC:=./build
-    
-    # MCUBootApp header is added during signing step in POSTBUILD (sign_script.bash)
-    MCUBOOT_HEADER_SIZE=0x400
-    
-    # Internal and external flash erased values used during signing step in POSTBUILD (sign_script.bash)
-    CY_INTERNAL_FLASH_ERASE_VALUE=0x00
-    CY_EXTERNAL_FLASH_ERASE_VALUE=0xFF
-    
-    # Add OTA_PLATFORM in DEFINES for platform-specific code
-    # ex: source/port_support/mcuboot/COMPONENT_OTA_PSOC_062/flash_qspi/flash_qspi.c
-    DEFINES+=$(OTA_PLATFORM)
+# To enable the HTTP and secure socket logs.
+#OTA_HTTP_DEBUG=1
+#DEFINES+=OTA_HTTP_DEBUG=1
+# Disable custom config header file
+OTA_HTTP_USE_CUSTOM_CONFIG=0
+# Set user agent name in all request headers with the specified name
+OTA_HTTP_USER_AGENT_VALUE="\"ota-http-client\""
+# Configure response header maximum length with the specified value - HTTP
+OTA_HTTP_MAX_HDR_SIZE=2048
 
-    # for use when running flashmap.py
-    FLASHMAP_PLATFORM=$(OTA_PLATFORM)
+DEFINES+=ENABLE_OTA_LOGS\
+         ENABLE_OTA_BOOTLOADER_ABSTRACTION_LOGS
 
-    FLASHMAP_PYTHON_SCRIPT=flashmap.py
-    flash_map_mk_exists=$(shell if [ -s "flashmap.mk" ]; then echo "success"; fi )
-    ifneq ($(flash_map_mk_exists),)
-        $(info include flashmap.mk)
-        include ./flashmap.mk
-    endif # flash_map_mk_exists
+# Enable the CY_PYTHON_PATH requirement.
+CY_PYTHON_REQUIREMENT=true
 
-    ############################
-    # IF FLASH_MAP sets USE_XIP,
-    #    we are executing code
-    #    from external flash
-    ############################
+# Python path for ota-bootloader-abstraction middlewares.
+# Set Python path
+ifeq ($(CY_PYTHON_PATH),)
+ifeq ($(OS),Windows_NT)
+CY_PYTHON_PATH?=$(shell which python)
+else
+CY_PYTHON_PATH?=$(shell which python3)
+endif
+endif # checking for Python path
 
-    ifeq ($(USE_XIP),1)
+# Build folder path for ota-bootloader-abstraction middleware.
+CY_BUILD_LOCATION=./build
 
-        # We need to set this flag for executing code from external flash
-        CY_RUN_CODE_FROM_XIP=1
+# Linker file path for ota-bootloader-abstraction middleware.
+OTA_LINKER_FILE=$(wildcard bsps/TARGET_$(TARGET)/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/linker$(LD_SUFFIX).$(CY_TOOLCHAIN_LS_EXT))
+LINKER_SCRIPT=$(wildcard bsps/TARGET_$(TARGET)/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/linker$(LD_SUFFIX).$(CY_TOOLCHAIN_LS_EXT))
 
-        # If code resides in external flash, we must support external flash.
-        USE_EXTERNAL_FLASH=1
+# Include the ota_update.mk and mcuboot_support.mk makefiles from the middlewares.
+ifneq ($(MAKECMDGOALS),getlibs)
+ifneq ($(MAKECMDGOALS),get_app_info)
+ifneq ($(MAKECMDGOALS),printlibs)
+    include ../mtb_shared/ota-update/*-v*/makefiles/ota_update.mk
+    include ../mtb_shared/ota-bootloader-abstraction/*-v*/makefiles/mcuboot/mcuboot_support.mk
+endif
+endif
+endif
 
-        # When running from external flash
-        # Signal to /source/port_support/serial_flash/ota_serial_flash.c
-        # That we need to turn off XIP and enter critical section when accessing SMIF.
-        #  NOTE: CYW920829M2EVB-01 does not need this.
-        CY_XIP_SMIF_MODE_CHANGE=1
-    
-        # Since we are running hybrid (some in RAM, some in External FLash),
-        #   we need to override the WEAK functions in CYHAL
-        DEFINES+=CYHAL_DISABLE_WEAK_FUNC_IMPL=1
-    
-    endif # USE_XIP
-
-    ifeq ($(FLASH_AREA_IMG_1_SECONDARY_DEV_ID),FLASH_DEVICE_INTERNAL_FLASH)
-        FLASH_ERASE_SECONDARY_SLOT_VALUE= $(CY_INTERNAL_FLASH_ERASE_VALUE)
-    else
-        FLASH_ERASE_SECONDARY_SLOT_VALUE= $(CY_EXTERNAL_FLASH_ERASE_VALUE)
-    endif # SECONDARY_DEV_ID
-
-    ###################################
-    # Add OTA defines to build
-    ###################################
-    DEFINES+=\
-        OTA_SUPPORT=1 \
-        APP_VERSION_MAJOR=$(OTA_APP_VERSION_MAJOR)\
-        APP_VERSION_MINOR=$(OTA_APP_VERSION_MINOR)\
-        APP_VERSION_BUILD=$(OTA_APP_VERSION_BUILD)
-    
-    ###################################
-    # The Defines from the flashmap.mk
-    ###################################
-    DEFINES+=\
-        MCUBOOT_MAX_IMG_SECTORS=$(MCUBOOT_MAX_IMG_SECTORS)\
-        MCUBOOT_IMAGE_NUMBER=$(MCUBOOT_IMAGE_NUMBER)\
-        FLASH_AREA_BOOTLOADER_DEV_ID="$(FLASH_AREA_BOOTLOADER_DEV_ID)"\
-        FLASH_AREA_BOOTLOADER_START=$(FLASH_AREA_BOOTLOADER_START)\
-        FLASH_AREA_BOOTLOADER_SIZE=$(FLASH_AREA_BOOTLOADER_SIZE)\
-        FLASH_AREA_IMG_1_PRIMARY_DEV_ID="$(FLASH_AREA_IMG_1_PRIMARY_DEV_ID)"\
-        FLASH_AREA_IMG_1_PRIMARY_START=$(FLASH_AREA_IMG_1_PRIMARY_START) \
-        FLASH_AREA_IMG_1_PRIMARY_SIZE=$(FLASH_AREA_IMG_1_PRIMARY_SIZE) \
-        FLASH_AREA_IMG_1_SECONDARY_DEV_ID="$(FLASH_AREA_IMG_1_SECONDARY_DEV_ID)"\
-        FLASH_AREA_IMG_1_SECONDARY_START=$(FLASH_AREA_IMG_1_SECONDARY_START) \
-        FLASH_AREA_IMG_1_SECONDARY_SIZE=$(FLASH_AREA_IMG_1_SECONDARY_SIZE)
-
-    ifneq ($(FLASH_AREA_IMAGE_SWAP_STATUS_DEV_ID),)
-        DEFINES+=\
-            FLASH_AREA_IMAGE_SWAP_STATUS_DEV_ID="$(FLASH_AREA_IMAGE_SWAP_STATUS_DEV_ID)"\
-            FLASH_AREA_IMAGE_SWAP_STATUS_START=$(FLASH_AREA_IMAGE_SWAP_STATUS_START)\
-            FLASH_AREA_IMAGE_SWAP_STATUS_SIZE=$(FLASH_AREA_IMAGE_SWAP_STATUS_SIZE)
-    endif
-
-    ifneq ($(FLASH_AREA_IMAGE_SCRATCH_DEV_ID),)
-        DEFINES+=\
-            FLASH_AREA_IMAGE_SCRATCH_DEV_ID="$(FLASH_AREA_IMAGE_SCRATCH_DEV_ID)"\
-            FLASH_AREA_IMAGE_SCRATCH_START=$(FLASH_AREA_IMAGE_SCRATCH_START)\
-            FLASH_AREA_IMAGE_SCRATCH_SIZE=$(FLASH_AREA_IMAGE_SCRATCH_SIZE)
-    endif
-
-    ifeq ($(USE_EXTERNAL_FLASH),1)
-        DEFINES+=OTA_USE_EXTERNAL_FLASH=1
-    endif
-    
-    ifeq ($(CY_RUN_CODE_FROM_XIP),1)
-        DEFINES+=CY_RUN_CODE_FROM_XIP=1
-    endif
-    
-    ifeq ($(CY_XIP_SMIF_MODE_CHANGE),1)
-        DEFINES+=CY_XIP_SMIF_MODE_CHANGE=1
-    endif
-
-    # This section needs to be before finding LINKER_SCRIPT_WILDCARD as we need the extension defined
-    ifeq ($(TOOLCHAIN),GCC_ARM)
-        CY_ELF_TO_HEX=$(MTB_TOOLCHAIN_GCC_ARM__BASE_DIR)/bin/arm-none-eabi-objcopy
-        CY_ELF_TO_HEX_OPTIONS="-O ihex"
-        CY_ELF_TO_HEX_FILE_ORDER="elf_first"
-        CY_TOOLCHAIN=GCC
-        CY_TOOLCHAIN_LS_EXT=ld
-        LDFLAGS+="-Wl,--defsym,MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE),--defsym,FLASH_AREA_IMG_1_PRIMARY_START=$(FLASH_AREA_IMG_1_PRIMARY_START),--defsym,FLASH_AREA_IMG_1_PRIMARY_SIZE=$(FLASH_AREA_IMG_1_PRIMARY_SIZE)"
-    else
-    ifeq ($(TOOLCHAIN),IAR)
-        CY_ELF_TO_HEX=$(MTB_TOOLCHAIN_IAR__BASE_DIR)/bin/ielftool
-        CY_ELF_TO_HEX_OPTIONS="--ihex"
-        CY_ELF_TO_HEX_FILE_ORDER="elf_first"
-        CY_TOOLCHAIN=$(TOOLCHAIN)
-        CY_TOOLCHAIN_LS_EXT=icf
-        DEFINES+=CY_INIT_CODECOPY_ENABLE
-        LDFLAGS+=--config_def MCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE) --config_def FLASH_AREA_IMG_1_PRIMARY_START=$(FLASH_AREA_IMG_1_PRIMARY_START) --config_def FLASH_AREA_IMG_1_PRIMARY_SIZE=$(FLASH_AREA_IMG_1_PRIMARY_SIZE)
-    else
-    ifeq ($(TOOLCHAIN),ARM)
-        CY_ELF_TO_HEX=$(MTB_TOOLCHAIN_ARM__BASE_DIR)/bin/fromelf
-        CY_ELF_TO_HEX_OPTIONS="--i32 --output"
-        CY_ELF_TO_HEX_FILE_ORDER="hex_first"
-        CY_TOOLCHAIN=GCC
-        CY_TOOLCHAIN_LS_EXT=sct
-        LDFLAGS+=--pd=-DMCUBOOT_HEADER_SIZE=$(MCUBOOT_HEADER_SIZE) --pd=-DFLASH_AREA_IMG_1_PRIMARY_START=$(FLASH_AREA_IMG_1_PRIMARY_START) --pd=-DFLASH_AREA_IMG_1_PRIMARY_SIZE=$(FLASH_AREA_IMG_1_PRIMARY_SIZE)
-    else
-        $(error Must define toolchain ! GCC_ARM, ARM, or IAR)
-    endif #ARM
-    endif #IAR
-    endif #GCC_ARM
-    
-    ifeq ($(CY_RUN_CODE_FROM_XIP),1)
-        OTA_LINKER_SCRIPT_TYPE=_ota_xip
-    else
-        OTA_LINKER_SCRIPT_TYPE=_ota_int
-    endif
-
-    # Find Linker Script using wildcard
-    # Directory within ota-upgrade library
-    LINKER_SCRIPT=$(wildcard $(SEARCH_ota-update)/platforms/$(OTA_PLATFORM)/linker_scripts/COMPONENT_$(CORE)/TOOLCHAIN_$(TOOLCHAIN)/ota/*$(OTA_LINKER_SCRIPT_TYPE).$(CY_TOOLCHAIN_LS_EXT))
-                                   
-    ###################################################################################################
-    # OTA POST BUILD scripting
-    ###################################################################################################
-    
-    ######################################
-    # Build Location / Output directory
-    ######################################
-    
-    # output directory for use in the sign_script.bash
-    OUTPUT_FILE_PATH:=$(CY_BUILD_LOC)/$(TARGET)/$(CONFIG)
-    
-    CY_HEX_TO_BIN="$(MTB_TOOLCHAIN_GCC_ARM__OBJCOPY)"
-    APP_BUILD_VERSION=$(OTA_APP_VERSION_MAJOR).$(OTA_APP_VERSION_MINOR).$(OTA_APP_VERSION_BUILD)
-    
-    # MCUBoot flash support location
-    MCUBOOT_DIR=$(SEARCH_ota-update)/source/port_support/mcuboot
-    IMGTOOL_SCRIPT_NAME=imgtool/imgtool.py
-    MCUBOOT_SCRIPT_FILE_DIR=$(MCUBOOT_DIR)
-    MCUBOOT_KEY_DIR=$(MCUBOOT_DIR)/keys
-    MCUBOOT_KEY_FILE=cypress-test-ec-p256.pem
-    SIGN_SCRIPT_FILE_PATH=$(SEARCH_ota-update)/scripts/sign_script.bash
-    
-    # Signing is disabled by default
-    # Use "create" for PSoC 062 instead of "sign", and no key path (use a space " " for keypath to keep batch happy)
-    # MCUBoot must also be modified to skip checking the signature, see README for more details.
-    # For signing, use "sign" and key path:
-    # IMGTOOL_COMMAND_ARG=sign
-    # CY_SIGNING_KEY_ARG="-k $(MCUBOOT_KEY_DIR)/$(MCUBOOT_KEY_FILE)"
-    IMGTOOL_COMMAND_ARG=create
-    CY_SIGNING_KEY_ARG=" "
-
-    POSTBUILD=$(SIGN_SCRIPT_FILE_PATH) $(OUTPUT_FILE_PATH) $(APPNAME) $(CY_PYTHON_PATH)\
-              $(CY_ELF_TO_HEX) $(CY_ELF_TO_HEX_OPTIONS) $(CY_ELF_TO_HEX_FILE_ORDER)\
-              $(MCUBOOT_SCRIPT_FILE_DIR) $(IMGTOOL_SCRIPT_NAME) $(IMGTOOL_COMMAND_ARG) $(FLASH_ERASE_SECONDARY_SLOT_VALUE) $(MCUBOOT_HEADER_SIZE)\
-              $(MCUBOOT_MAX_IMG_SECTORS) $(APP_BUILD_VERSION) $(FLASH_AREA_IMG_1_PRIMARY_START) $(FLASH_AREA_IMG_1_PRIMARY_SIZE)\
-              $(CY_HEX_TO_BIN) $(CY_SIGNING_KEY_ARG)
 endif # OTA_SUPPORT
 
 ################################################################################
@@ -461,41 +364,3 @@ endif
 $(info Tools Directory: $(CY_TOOLS_DIR))
 
 include $(CY_TOOLS_DIR)/make/start.mk
-
-
-###############################################################################
-#
-# OTA flashmap parser must be run after start.mk so that libs/mtb.mk is valid
-#
-###############################################################################
-
-ifeq ($(OTA_SUPPORT),1)
-#
-# Only when we are in the correct build pass
-#
-    ifneq ($(MAKECMDGOALS),getlibs)
-    ifneq ($(MAKECMDGOALS),get_app_info)
-    ifneq ($(MAKECMDGOALS),printlibs)
-    ifneq ($(FLASHMAP_PYTHON_SCRIPT),)
-    ifneq ($(OTA_FLASH_MAP),)
-    ifeq ($(CY_PYTHON_PATH),)
-        CY_PYTHON_PATH=$(shell which python)
-    endif
-        $(info "flashmap.py $(CY_PYTHON_PATH) $(SEARCH_ota-update)/scripts/$(FLASHMAP_PYTHON_SCRIPT) -p $(FLASHMAP_PLATFORM) -i $(OTA_FLASH_MAP) > flashmap.mk")
-        $(shell $(CY_PYTHON_PATH) $(SEARCH_ota-update)/scripts/$(FLASHMAP_PYTHON_SCRIPT) -p $(FLASHMAP_PLATFORM) -i $(OTA_FLASH_MAP) > flashmap.mk)
-        flash_map_status=$(shell if [ -s "flashmap.mk" ]; then echo "success"; fi )
-        ifeq ($(flash_map_status),)
-            $(info "")
-            $(error Failed to create flashmap.mk !)
-            $(info "")
-        else
-            $(info include flashmap.mk)
-            include ./flashmap.mk
-        endif # flash_map_status
-    endif # OTA_FLASH_MAP
-    endif # FLASHMAP_PYTHON_SCRIPT
-    endif # NOT getlibs
-    endif # NOT get_app_info
-    endif # NOT printlibs
-    
-endif # OTA_SUPPORT
