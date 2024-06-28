@@ -64,7 +64,7 @@
 #define WIFI_CONN_RETRY_DELAY_MS            (500)
 
 /* Application ID */
-#define APP_ID                              (0)  
+#define APP_ID                              (0)
 
 /*******************************************************************************
 * Forward declaration
@@ -151,10 +151,6 @@ cy_ota_storage_interface_t ota_interfaces =
  *******************************************************************************/
 void ota_task(void *args)
 {
-
-    /* default for OTA logging to NOTICE */
-    cy_ota_set_log_level(CY_LOG_NOTICE);
-
     /* initialize OTA storage */
     if (CY_RSLT_SUCCESS != cy_ota_storage_init())
     {
@@ -286,7 +282,7 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
     error_string  = cy_ota_get_error_string(cy_ota_get_last_error());
 
     print_heap_usage("In OTA Callback");
-    
+
     switch (cb_data->reason)
     {
 
@@ -323,8 +319,8 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
                     /* NOTE:
                      *  HTTP - json_doc holds the HTTP "GET" request
                      */
-                    if ((cb_data->broker_server.host_name == NULL) ||
-                        ( cb_data->broker_server.port == 0) ||
+                    if ((cb_data->broker_server.host_name == NULL)  ||
+                        ( cb_data->broker_server.port == 0)         ||
                         ( strlen(cb_data->file) == 0) )
                     {
                         printf("ERROR in callback data: HTTP: server: %p port: %d topic: '%p'\n",
@@ -420,7 +416,7 @@ cy_ota_callback_results_t ota_callback(cy_ota_cb_struct_t *cb_data)
                             (unsigned long)cb_data->percentage,
                             (unsigned long)cb_data->bytes_written,
                             (unsigned long)cb_data->total_size);
-                    
+
                     /* Move cursor to previous line */
                     printf("\x1b[1F");
                     break;

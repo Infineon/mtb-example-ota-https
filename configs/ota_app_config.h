@@ -64,7 +64,7 @@
 
 #if (ENABLE_TLS == true)
 /* HTTP Server Port */
-#define HTTP_SERVER_PORT    (4443)
+#define HTTP_SERVER_PORT    (443)
 #else
 /* HTTP Server Port */
 #define HTTP_SERVER_PORT    (8080)
@@ -92,9 +92,9 @@
         ".........base64 data.......\n" \
         "-----END CERTIFICATE-------\n"
 */
-#define USING_CLIENT_CERTIFICATE    (false)
+#define USING_CLIENT_CERTIFICATE    (true)
 
-#define CLIENT_CERTIFICATE  ""
+#define CLIENT_CERTIFICATE ""
 
 /* Private Key
    Must include the PEM header and footer:
@@ -103,8 +103,8 @@
         "...........base64 data.........\n" \
         "-----END RSA PRIVATE KEY-------\n"
 */
-#define USING_CLIENT_KEY    (false)
+#define USING_CLIENT_KEY    (true)
 
-#define CLIENT_KEY  ""
+#define CLIENT_KEY ""
 
 #endif /* SOURCE_OTA_APP_CONFIG_H_ */

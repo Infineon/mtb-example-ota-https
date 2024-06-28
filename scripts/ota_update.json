@@ -8,7 +8,7 @@
   "Version":"1.0.0",
   "Connection":"HTTPS",
   "Server":"192.168.0.10",
-  "Port":"4443",
+  "Port":"443",
   "File":"/mtb-example-ota-https.bin",
   "UniqueTopicName":"replace"
 }

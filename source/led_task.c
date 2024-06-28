@@ -71,7 +71,7 @@ void led_task(void *args)
     /* Initialize the User LED */
     result = cyhal_gpio_init(CYBSP_USER_LED, CYHAL_GPIO_DIR_OUTPUT,
                             CYHAL_GPIO_DRIVE_PULLUP, CYBSP_LED_STATE_OFF);
-    
+
     if (CY_RSLT_SUCCESS != result)
     {
         CY_ASSERT(0);
@@ -79,7 +79,7 @@ void led_task(void *args)
 
     /* To avoid compiler warning */
     (void)result;
-    
+
     while(true)
     {
         /* Toggle the state of user LED */

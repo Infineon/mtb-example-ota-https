@@ -82,7 +82,7 @@ struct qspi_ss_config
     defined(PSOC_062_2M) || \
     defined(PSOC_062_1M))
     #define CY_BOOTLOADER_SMIF_SS_CFG_NUM 4
-#elif defined(PSOC_064_512K) || defined(PSOC_062_512K) || defined(CYW20829)
+#elif defined(PSOC_064_512K) || defined(PSOC_062_512K) || defined(CYW20829) || defined(CYW89829)
     #define CY_BOOTLOADER_SMIF_SS_CFG_NUM 3
 #else
 #error "Platform device name is unsupported."

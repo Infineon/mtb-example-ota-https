@@ -8,7 +8,7 @@
 * downloaded and written to the secondary slot. On the next reboot, MCUBoot
 * will copy the new image over to the primary slot and run the application.
 *
-* Related Document: See Readme.md
+* Related Document: See README.md
 ********************************************************************************
 * Copyright 2020-2024, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
@@ -91,7 +91,7 @@ TaskHandle_t led_task_handle;
 int main(void)
 {
     cy_rslt_t result = CY_RSLT_TYPE_ERROR;
-    
+
     /* Prevent the WDT from timing out and resetting the device. */
     /* Watchdog timer started by the bootloader */
     cyhal_wdt_kick(NULL);
@@ -116,7 +116,7 @@ int main(void)
     }
 
  #ifdef XMC7200
-    /* Disables and invalidate instruction cache and disable, clean and invalidate data cache for XMC7200 */ 
+    /* Disables and invalidate instruction cache and disable, clean and invalidate data cache for XMC7200 */
     SCB_DisableICache();
     SCB_DisableDCache();
 
@@ -125,14 +125,8 @@ int main(void)
     Cy_Flashc_MainWriteEnable();
  #endif
 
-    /* To avoid compiler warning */
-    (void)result;
-    
     /* Enable global interrupts. */
     __enable_irq();
-
-    /* default for all logging to WARNING */
-    cy_log_init(CY_LOG_WARNING, NULL, NULL);
 
     printf("\r===============================================================\n");
     printf("TEST Application: OTA Update version: %d.%d.%d\n",

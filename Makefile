@@ -237,7 +237,7 @@ ifneq ($(PLATFORM), XMC7200)
 COMPONENTS+=OTA_PSOC_062
 endif
 
-# Starting from the 4.0 version of the ota-update library, the library is now fully separated from the MCUBootloader. 
+# Starting from the 4.0 version of the ota-update library, the library is now fully separated from the MCUBootloader.
 # This means that it can function independently and work with any bootloader.
 # This code example only supports MCUboot at this moment.
 CY_BOOTLOADER=MCUBOOT
@@ -264,18 +264,12 @@ DEFINES+=OTA_SUPPORT=1\
          APP_VERSION_MINOR=$(APP_VERSION_MINOR)\
          APP_VERSION_BUILD=$(APP_VERSION_BUILD)
 
-# To enable the HTTP and secure socket logs.
-#OTA_HTTP_DEBUG=1
-#DEFINES+=OTA_HTTP_DEBUG=1
 # Disable custom config header file
 OTA_HTTP_USE_CUSTOM_CONFIG=0
 # Set user agent name in all request headers with the specified name
 OTA_HTTP_USER_AGENT_VALUE="\"ota-http-client\""
 # Configure response header maximum length with the specified value - HTTP
 OTA_HTTP_MAX_HDR_SIZE=2048
-
-DEFINES+=ENABLE_OTA_LOGS\
-         ENABLE_OTA_BOOTLOADER_ABSTRACTION_LOGS
 
 # Enable the CY_PYTHON_PATH requirement.
 CY_PYTHON_REQUIREMENT=true
