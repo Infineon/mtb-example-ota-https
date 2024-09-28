@@ -143,6 +143,9 @@ DEFINES+=CY_RTOS_AWARE
 # targets commenting the below DEFINES line is sufficient.
 DEFINES+=CY_WIFI_HOST_WAKE_SW_FORCE=0
 
+# Disabled D-cache for XMC7000 based BSPs
+DEFINES+=CY_DISABLE_XMC7000_DATA_CACHE
+
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=hardfp
 
