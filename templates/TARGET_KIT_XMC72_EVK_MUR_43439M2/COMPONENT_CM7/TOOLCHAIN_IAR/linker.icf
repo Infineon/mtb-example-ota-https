@@ -51,10 +51,20 @@ define symbol __ICFEDIT_intvec_start__ = 0x00000000;
  */
 /* RAM */
 define symbol __ICFEDIT_region_IRAM1_start__ = 0x28020000; /* 0x20000 is reserved for cm0+ */
-define symbol __ICFEDIT_region_IRAM1_end__   = 0x28100000;
+define symbol __ICFEDIT_region_IRAM1_end__   = 0x280E0000;
+define symbol __ICFEDIT_region_IRAM2_start__ = 0x0;
+define symbol __ICFEDIT_region_IRAM2_end__   = 0x0;
+
+/* RAM non-cacheable ram */
+/* Always make sure that the starting address of the non-cacheable region is aligned to the non-cacheable region size boundary. */
+define symbol __ICFEDIT_region_IRAM3_start__ = 0x280E0000; // sram_base_address + cm0plus_sram_reserve + cm7_0_sram_reserve;
+define symbol __ICFEDIT_region_IRAM3_end__   = 0x280FFFFF; // sram_total_size - cm0plus_sram_reserve - cm7_0_sram_reserve;
+
 /* Flash */
-define symbol __ICFEDIT_region_IROM1_start__ = 0x10000000; /* 0x80000 is reserved for cm0+ */
+define symbol __ICFEDIT_region_IROM1_start__ = 0x10000000; /* No Flash reserved for cm0plus */
 define symbol __ICFEDIT_region_IROM1_end__   = 0x107F0000;
+define symbol __ICFEDIT_region_IROM2_start__ = 0x0;
+define symbol __ICFEDIT_region_IROM2_end__   = 0x0;
 
 define symbol __ICFEDIT_region_EROM1_start__ = 0x0;
 define symbol __ICFEDIT_region_EROM1_end__   = 0x0;
@@ -73,7 +83,7 @@ define symbol __ICFEDIT_region_ERAM3_end__   = 0x0;
 
 /*-Sizes-*/
 if (!isdefinedsymbol(__STACK_SIZE)) {
-  define symbol __ICFEDIT_size_cstack__ = 0x1000;
+  define symbol __ICFEDIT_size_cstack__ = 0x00001000; //cm7_stack_reserve
 } else {
   define symbol __ICFEDIT_size_cstack__ = __STACK_SIZE;
 }
@@ -88,12 +98,22 @@ if (!isdefinedsymbol(__HEAP_SIZE)) {
 
 define symbol RAMVECTORS_ALIGNMENT          = 128;
 
+define symbol _base_SRAM_NON_CACHE              = __ICFEDIT_region_IRAM3_start__;
+define symbol _size_SRAM_NON_CACHE              = __ICFEDIT_region_IRAM3_end__ - __ICFEDIT_region_IRAM3_start__ + 1;
+
+/*============================================================
+ * Memory definitions
+ *============================================================
+ */
+
 define memory mem with size = 4G;
-define region IRAM1_region = mem:[from __ICFEDIT_region_IRAM1_start__ to __ICFEDIT_region_IRAM1_end__];
+define region IRAM1_region   = mem:[from __ICFEDIT_region_IRAM1_start__ to __ICFEDIT_region_IRAM1_end__];
+define region SRAM_NONCACHE  = mem:[from _base_SRAM_NON_CACHE        size _size_SRAM_NON_CACHE];
 
 define block CSTACK     with alignment = 8, size = __ICFEDIT_size_cstack__     { };
 define block HEAP       with expanding size, alignment = 8, size = __ICFEDIT_size_heap__ { };
 define block RAMVECTOR  with alignment = RAMVECTORS_ALIGNMENT { readwrite section .intvec_ram};
+define block CY_SHAREDMEM   with alignment = 32 { section .cy_sharedmem };
 
 /*
     Arguments for OTA using MCUBoot -- will get from passed in Makefile:
@@ -127,7 +147,9 @@ place in            IRAM1_region { readwrite };
 "heap":
 place in            IRAM1_region { block HEAP };
 "stack":
-place at end of     IRAM1_region { block CSTACK };
+place at end of     SRAM_NONCACHE { block CSTACK };
+
+place in          SRAM_NONCACHE  { block CY_SHAREDMEM };
 
 keep {
         section .intvec,

@@ -78,6 +78,10 @@
 #define CY_FLASH_BASE                       0x10000000UL
 #endif /* XMC7100 */
 
+#if !defined (CY_DISABLE_XMC7000_DATA_CACHE) && defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
+#define DCACHE_BYTE_ALIGNEMNT       (__SCB_DCACHE_LINE_SIZE)
+#endif
+
 #if (defined (CY_IP_MXSMIF) && !defined (XMC7100) && !defined (XMC7200))
 /* UN-comment to test the write functionality */
 //#define READBACK_SMIF_WRITE_TEST
@@ -501,9 +505,6 @@ static int xmc_internal_flash_erase(uint32_t addr, size_t size)
         row_number = 1U;
     }
 
-    Cy_Flash_Init();
-    Cy_Flashc_MainWriteEnable();
-
     while (row_number != 0u) {
         row_number--;
         row_addr = row_start_addr + row_number * (uint32_t)erase_sz;
@@ -531,7 +532,6 @@ static int xmc_internal_flash_write(uint8_t data[], uint32_t address, size_t len
     int retCode;
     cy_en_flashdrv_status_t rc = CY_FLASH_DRV_SUCCESS;
 
-    uint32_t writeBuffer[CY_FLASH_SIZEOF_ROW / sizeof(uint32_t)];
     uint32_t rowId;
     uint32_t dstIndex;
     uint32_t srcIndex = 0u;
@@ -539,11 +539,25 @@ static int xmc_internal_flash_write(uint8_t data[], uint32_t address, size_t len
     uint32_t byteOffset;
     uint32_t rowsNotEqual;
     uint8_t *writeBufferPointer;
-
     eeOffset = (uint32_t)address;
-    writeBufferPointer = (uint8_t*)writeBuffer;
-
     bool cond1;
+
+#if !defined (CY_DISABLE_XMC7000_DATA_CACHE) && defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
+    uint8_t *local_buffer = 0, *aligned_local_buffer = 0;
+    bool iscacheable = false;
+
+    local_buffer = (uint8_t *)malloc((CY_FLASH_SIZEOF_ROW) + (2 * DCACHE_BYTE_ALIGNEMNT));
+    if(NULL == local_buffer)
+    {
+        return -1;
+    }
+    aligned_local_buffer = (uint8_t*)((size_t)local_buffer + ((size_t)32 - ((size_t)local_buffer & 0x1F)));
+    writeBufferPointer = aligned_local_buffer;
+    iscacheable = true;
+#else
+    uint32_t writeBuffer[CY_FLASH_SIZEOF_ROW / sizeof(uint32_t)];
+    writeBufferPointer = (uint8_t*)writeBuffer;
+#endif
 
     /* Make sure, that varFlash[] points to Flash */
     cond1 = ((eeOffset >= CY_FLASH_BASE) && ((eeOffset + len) <= (CY_FLASH_BASE + CY_FLASH_SIZE)));
@@ -581,7 +595,7 @@ static int xmc_internal_flash_write(uint8_t data[], uint32_t address, size_t len
             {
                 int intr_status = 0;
                 intr_status = Cy_SysLib_EnterCriticalSection();
-                rc = Cy_Flash_ProgramRow((rowId * CY_FLASH_SIZEOF_ROW) + CY_FLASH_BASE, writeBuffer);
+                rc = Cy_Flash_ProgramRow((rowId * CY_FLASH_SIZEOF_ROW) + CY_FLASH_BASE, (uint32_t*)writeBufferPointer);
                 Cy_SysLib_ExitCriticalSection(intr_status);
                 if(rc != CY_FLASH_DRV_SUCCESS)
                 {
@@ -614,6 +628,14 @@ static int xmc_internal_flash_write(uint8_t data[], uint32_t address, size_t len
             retCode = 2;
             break;
     }
+
+#if !defined (CY_DISABLE_XMC7000_DATA_CACHE) && defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
+    if(iscacheable == true)
+    {
+        free(local_buffer);
+    }
+#endif
+
     return(retCode);
 }
 CY_SECTION_RAMFUNC_END
@@ -1068,7 +1090,7 @@ cy_rslt_t cy_ota_mem_write( cy_ota_mem_type_t mem_type, uint32_t addr, void *dat
         }
         else
         {
-            result = cy_ota_mem_write_row_size(mem_type, addr, data, len);
+            result = cy_ota_mem_write_row_size(mem_type, curr_addr, curr_src, chunk_size);
             if(result != CY_RSLT_SUCCESS)
             {
                 return CY_RSLT_TYPE_ERROR;

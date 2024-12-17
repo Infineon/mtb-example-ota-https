@@ -116,10 +116,6 @@ int main(void)
     }
 
  #ifdef XMC7200
-    /* Disables and invalidate instruction cache and disable, clean and invalidate data cache for XMC7200 */
-    SCB_DisableICache();
-    SCB_DisableDCache();
-
     /* Initialize the XMC7200 flash */
     Cy_Flash_Init();
     Cy_Flashc_MainWriteEnable();
