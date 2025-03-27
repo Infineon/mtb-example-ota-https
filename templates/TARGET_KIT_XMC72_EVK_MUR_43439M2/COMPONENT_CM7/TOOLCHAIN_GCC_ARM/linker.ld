@@ -1,5 +1,5 @@
 /***************************************************************************//**
-* \file xmc7200d_x8384_cm7.ld
+* \file xmc7200_x8384_cm7.ld
 * \version 1.0.0
 *
 * Linker file for the GNU C compiler.

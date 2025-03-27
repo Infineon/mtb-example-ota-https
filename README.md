@@ -14,12 +14,12 @@ Build the MCUboot-based bootloader application outside of the OTA HTTPS applicat
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-ota-https)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzE1ODUiLCJTcGVjIE51bWJlciI6IjAwMi0zMTU4NSIsIkRvYyBUaXRsZSI6Ik92ZXItdGhlLWFpciBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgSFRUUFMiLCJyaWQiOiJ2YWlyYW11dGh1IHJhbWFzYW15IiwiRG9jIHZlcnNpb24iOiI2LjQuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiV0lGSSJ9)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzE1ODUiLCJTcGVjIE51bWJlciI6IjAwMi0zMTU4NSIsIkRvYyBUaXRsZSI6Ik92ZXItdGhlLWFpciBmaXJtd2FyZSB1cGRhdGUgdXNpbmcgSFRUUFMiLCJyaWQiOiJ2YWlyYW11dGh1IHJhbWFzYW15IiwiRG9jIHZlcnNpb24iOiI2LjUuMCIsIkRvYyBMYW5ndWFnZSI6IkVuZ2xpc2giLCJEb2MgRGl2aXNpb24iOiJNQ0QiLCJEb2MgQlUiOiJJQ1ciLCJEb2MgRmFtaWx5IjoiV0lGSSJ9)
 
 
 ## Requirements
 
-- [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) v3.2 or later (tested with v3.3)
+- [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) v3.2 or later (tested with v3.4)
 - Board support package (BSP) minimum required version: 4.0.0
 - Programming language: C
 - Other tools: Python v3.8.10 or later
@@ -53,13 +53,13 @@ This example uses the board's default configuration. See the kit user guide to e
 
 See the [ModusToolbox&trade; tools package installation guide](https://www.infineon.com/ModusToolboxInstallguide) for information about installing and configuring the tools package.
 
-1. Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://teratermproject.github.io/index-en.html).
+1. Install a terminal emulator if you do not have one. Instructions in this document use [Tera Term](https://teratermproject.github.io/index-en.html)
 
-2. This example uses a local-web-server to set up a local HTTP server. For more details, see [Setting up an HTTP/HTTPS server using local-web-server](#setting-up-an-httphttps-server-using-local-web-server-based-on-nodejs).
+2. This example uses a local-web-server to set up a local HTTP server. For more details, see [Setting up an HTTP/HTTPS server using local-web-server](#setting-up-an-httphttps-server-using-local-web-server-based-on-nodejs)
 
-3. Install the Python interpreter and add it to the top of the system path in environmental variables. This code example is tested with [Python v3.8.10](https://www.python.org/downloads/release/python-3810/).
+3. Install the Python interpreter and add it to the top of the system path in environmental variables. This code example is tested with [Python v3.8.10](https://www.python.org/downloads/release/python-3810/)
 
-    > **Note:** This code example currently does not work with the custom BSP name for the `KIT_XMC72_EVK_MUR_43439M2` and `CY8CPROTO-062S3-4343W` kits. If you want to change the BSP name to a non-default value, ensure to update the custom BSP name in *Makefile* under the relevant section. The build fails if you do not update the custom BSP name.
+    > **Note:** This code example currently does not work with the custom BSP name for the `KIT_XMC72_EVK_MUR_43439M2` and `CY8CPROTO-062S3-4343W` kits. If you want to change the BSP name to a non-default value, ensure to update the custom BSP name in *Makefile* under the relevant section. The build fails if you do not update the custom BSP name
 
 
 ## Structure and overview
@@ -90,27 +90,27 @@ The ModusToolbox&trade; tools package provides the Project Creator as both a GUI
 
 <details><summary><b>Use Project Creator GUI</b></summary>
 
-1. Open the Project Creator GUI tool.
+1. Open the Project Creator GUI tool
 
-   There are several ways to do this, including launching it from the dashboard or from inside the Eclipse IDE. For more details, see the [Project Creator user guide](https://www.infineon.com/ModusToolboxProjectCreator) (locally available at *{ModusToolbox&trade; install directory}/tools_{version}/project-creator/docs/project-creator.pdf*).
+   There are several ways to do this, including launching it from the dashboard or from inside the Eclipse IDE. For more details, see the [Project Creator user guide](https://www.infineon.com/ModusToolboxProjectCreator) (locally available at *{ModusToolbox&trade; install directory}/tools_{version}/project-creator/docs/project-creator.pdf*)
 
-2. On the **Choose Board Support Package (BSP)** page, select a kit supported by this code example. See [Supported kits](#supported-kits-make-variable-target).
+2. On the **Choose Board Support Package (BSP)** page, select a kit supported by this code example. See [Supported kits](#supported-kits-make-variable-target)
 
-   > **Note:** To use this code example for a kit not listed here, you may need to update the source files. If the kit does not have the required resources, the application may not work.
+   > **Note:** To use this code example for a kit not listed here, you may need to update the source files. If the kit does not have the required resources, the application may not work
 
 3. On the **Select Application** page:
 
-   a. Select the **Applications(s) Root Path** and the **Target IDE**.
+   a. Select the **Applications(s) Root Path** and the **Target IDE**
 
-   > **Note:** Depending on how you open the Project Creator tool, these fields may be pre-selected for you.
+      > **Note:** Depending on how you open the Project Creator tool, these fields may be pre-selected for you
 
-   b. Select this code example from the list by enabling its check box.
+   b. Select this code example from the list by enabling its check box
 
-   > **Note:** You can narrow the list of displayed examples by typing in the filter box.
+      > **Note:** You can narrow the list of displayed examples by typing in the filter box
 
-   c. (Optional) Change the suggested **New Application Name** and **New BSP Name**.
+   c. (Optional) Change the suggested **New Application Name** and **New BSP Name**
 
-   d. Click **Create** to complete the application creation process.
+   d. Click **Create** to complete the application creation process
 
 </details>
 
@@ -126,7 +126,6 @@ The following example clones the "[mtb-example-ota-https](https://github.com/Inf
    ```
    project-creator-cli --board-id CY8CPROTO-062S2-43439 --app-id mtb-example-ota-https --user-app-name OTA_HTTPS --target-dir "C:/mtb_projects"
    ```
-
 
 The 'project-creator-cli' tool has the following arguments:
 
@@ -167,11 +166,11 @@ For more details, see the [Visual Studio Code for ModusToolbox&trade; user guide
 </details>
 
 
-<details><summary><b>Keil µVision</b></summary>
+<details><summary><b>Arm&reg; Keil&reg; µVision&reg;</b></summary>
 
-Double-click the generated *{project-name}.cprj* file to launch the Keil µVision IDE.
+Double-click the generated *{project-name}.cprj* file to launch the Keil&reg; µVision&reg; IDE.
 
-For more details, see the [Keil µVision for ModusToolbox&trade; user guide](https://www.infineon.com/MTBuVisionUserGuide) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mt_uvision_user_guide.pdf*).
+For more details, see the [Arm&reg; Keil&reg; µVision&reg; for ModusToolbox&trade; user guide](https://www.infineon.com/MTBuVisionUserGuide) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mt_uvision_user_guide.pdf*).
 
 </details>
 
@@ -210,13 +209,13 @@ The [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-
 - MCUboot-based bootloader application that runs on CM0+ core
 - Blinky application that runs on CM4/CM7 core
 
-1. Import the [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-basic) code example per the instructions in the [Using the code example](https://github.com/Infineon/mtb-example-mcuboot-basic/blob/master/README.md#using-the-code-example) section of its README.
+1. Import the [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-basic) code example per the instructions in the [Using the code example](https://github.com/Infineon/mtb-example-mcuboot-basic/blob/master/README.md#using-the-code-example) section of its README
 
-   The MCUboot-based bootloader and OTA HTTPS applications must have the same understanding of the memory layout. The memory layout is defined through JSON files. The OTA HTTPS application provides a set of predefined JSON files that can be readily used.
+   The MCUboot-based bootloader and OTA HTTPS applications must have the same understanding of the memory layout. The memory layout is defined through JSON files. The OTA HTTPS application provides a set of predefined JSON files that can be readily used
 
-   > **Note:** Both the MCUboot-based bootloader and OTA HTTPS applications must use the same JSON file.
+   > **Note:** Both the MCUboot-based bootloader and OTA HTTPS applications must use the same JSON file
 
-   The *\<OTA_HTTPS>/flashmap* folder contains the pre-defined *flashmap* JSON files. The following files are supported by this example.
+   The *\<OTA_HTTPS>/flashmap* folder contains the pre-defined *flashmap* JSON files. The following files are supported by this example
 
    **Table 1. Supported JSON files**
 
@@ -228,19 +227,19 @@ The [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-
 
    <br>
 
-2. Copy the required *flashmap* JSON file from the *\<OTA_HTTPS>/flashmap* folder and paste it in the *\<MCUboot>/flashmap* folder.
+2. Copy the required *flashmap* JSON file from the *\<OTA_HTTPS>/flashmap* folder and paste it in the *\<MCUboot>/flashmap* folder
 
-3. Modify the value of the `FLASH_MAP` variable in the *\<MCUboot>/user_config.mk* file to the selected JSON file name from the previous step.
+3. Modify the value of the `FLASH_MAP` variable in the *\<MCUboot>/user_config.mk* file to the selected JSON file name from the previous step
 
-4. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
+4. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector
 
-5. Open a CLI terminal.
+5. Open a CLI terminal
 
-   On Linux and macOS, you can use any terminal application. On Windows, from the Start menu, open the **modus-shell** application.
+   On Linux and macOS, you can use any terminal application. On Windows, from the Start menu, open the **modus-shell** application
 
-6. Navigate the terminal to the *\<mtb_shared>/mcuboot/\<tag>/scripts* folder.
+6. Navigate the terminal to the *\<mtb_shared>/mcuboot/\<tag>/scripts* folder
 
-7. Run the following commands to ensure that the required modules are installed.
+7. Run the following commands to ensure that the required modules are installed
 
     > **Note:** For Linux and macOS platforms, use `python3` instead of `python` in the following command:
 
@@ -248,11 +247,11 @@ The [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-
       python -m pip install --upgrade cysecuretools
       ```
 
-    > **Note:** *cysecuretools* is used for signing the image for XMC7000 MCUs.
+    > **Note:** *cysecuretools* is used for signing the image for XMC7000 MCUs
 
-8. Open a serial terminal emulator and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
+8. Open a serial terminal emulator and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud
 
-9. Build and program the bootloader application per the [Step-by-step instructions](https://github.com/Infineon/mtb-example-mcuboot-basic/blob/master/README.md#step-by-step-instructions) in its README or follow the instructions as given below.
+9. Build and program the bootloader application per the [Step-by-step instructions](https://github.com/Infineon/mtb-example-mcuboot-basic/blob/master/README.md#step-by-step-instructions) in its README or follow the instructions as given below
 
    <details open><summary><b>Using CLI</b></summary>
 
@@ -274,16 +273,16 @@ The [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-
 
 This code example uses a local server to demonstrate the OTA operation over HTTP/HTTPS. In this example, [local-web-server](https://www.npmjs.com/package/local-web-server) is used. It is a lean and modular web server for rapid full-stack development.
 
-1. Download and install [node.js](https://nodejs.org/en/download/).
-   Install with the default settings. **Do not tick** the checkbox to install the optional tools for native modules.
+1. Download and install [node.js](https://nodejs.org/en/download/)
+   Install with the default settings. **Do not tick** the checkbox to install the optional tools for native modules
 
-2. Open a CLI terminal.
+2. Open a CLI terminal
 
-   On Linux and macOS, you can use any terminal application. On Windows, from the Start menu, open the *modus-shell* app.
+   On Linux and macOS, you can use any terminal application. On Windows, from the Start menu, open the *modus-shell* app
 
-3. Navigate to the *\<OTA_HTTPS>/scripts/* folder.
+3. Navigate to the *\<OTA_HTTPS>/scripts/* folder
 
-4. Execute the following command to generate self-signed SSL certificates and keys. On Linux and macOS, you can get your device-local IP address by running the `ifconfig` command on any terminal application. On Windows, run the `ipconfig` command on a command prompt.
+4. Execute the following command to generate self-signed SSL certificates and keys. On Linux and macOS, you can get your device-local IP address by running the `ifconfig` command on any terminal application. On Windows, run the `ipconfig` command on a command prompt
 
    ```
    sh generate_ssl_cert.sh <local-ip-address-of-your-pc>
@@ -303,7 +302,7 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
    - *http_client.crt* – Client certificate
    - *http_client.key* – Client private key
 
-5. Execute the following command to install [local-web-server](https://www.npmjs.com/package/local-web-server).
+5. Execute the following command to install [local-web-server](https://www.npmjs.com/package/local-web-server)
 
    ```
    npm install -g local-web-server
@@ -341,16 +340,16 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
 
    ![](images/https_non_tls_mode.png)
 
-   > **Note:** If you are running a local-web-server server on a device which is maintained by your organization or institution, the firewall settings may not permit you to host a file server on the local network. To verify whether the file server has been hosted properly from a device connected to the same local network, check the server link on a browser. Browse for `http://<ip-address-noted-earlier>:<port-number-noted-earlier>`; for example: `http://192.168.0.10:8080`. If the files in the *\<OTA_HTTPS>/scripts/* directory are listed on the browser page, you have a properly working file server. Do not proceed to the next section without getting the file server to work.
+   > **Note:** If you are running a local-web-server server on a device which is maintained by your organization or institution, the firewall settings may not permit you to host a file server on the local network. To verify whether the file server has been hosted properly from a device connected to the same local network, check the server link on a browser. Browse for `http://<ip-address-noted-earlier>:<port-number-noted-earlier>`; for example: `http://192.168.0.10:8080`. If the files in the *\<OTA_HTTPS>/scripts/* directory are listed on the browser page, you have a properly working file server. Do not proceed to the next section without getting the file server to work
 
 
 ## Operation
 
-1. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
+1. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector
 
-2. Open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
+2. Open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud
 
-3. Modify the `PLATFORM` variable in the *\<OTA_HTTPS>/Makefile* based on the target that you have selected. Currently in the Makefile, a conditional if-else block is used to automatically select a value based on the target selected. You can remove it and directly assign a value as per **Table 2**.
+3. Modify the `PLATFORM` variable in the *\<OTA_HTTPS>/Makefile* based on the target that you have selected. Currently in the Makefile, a conditional if-else block is used to automatically select a value based on the target selected. You can remove it and directly assign a value as per **Table 2**
 
    **Table 2. Target-specific platform values**
 
@@ -362,9 +361,9 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
 
    <br>
 
-4. Modify the `OTA_FLASH_MAP` variable in the *\<OTA_HTTPS>/Makefile* to change the JSON file name to match the selection made while programming the MCUboot-based bootloader application. Currently in the Makefile, a conditional `if-else` block is used to automatically select a default flash map file based on the target selected. You can remove it and directly assign the path of the required flash map file to the `OTA_FLASH_MAP` variable.
+4. Modify the `OTA_FLASH_MAP` variable in the *\<OTA_HTTPS>/Makefile* to change the JSON file name to match the selection made while programming the MCUboot-based bootloader application. Currently in the Makefile, a conditional `if-else` block is used to automatically select a default flash map file based on the target selected. You can remove it and directly assign the path of the required flash map file to the `OTA_FLASH_MAP` variable
 
-   The *\<OTA_HTTPS>/flashmap* folder contains the pre-defined flashmap JSON files. The following files are supported by this example.
+   The *\<OTA_HTTPS>/flashmap* folder contains the pre-defined flashmap JSON files. The following files are supported by this example
 
    **Table 3. Supported JSON files**
 
@@ -376,31 +375,31 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
 
    <br>
 
-   > **Note:** Both the MCUboot-based bootloader and the OTA HTTPS application must use the same JSON file.
+   > **Note:** Both the MCUboot-based bootloader and the OTA HTTPS application must use the same JSON file
 
 5. Edit the *\<OTA_HTTPS>/configs/ota_app_config.h* file to configure your OTA HTTPS application:
 
-   1. Modify the connection configuration, such as `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY` macros to match the settings of your Wi-Fi network. Ensure that the device running the HTTP server and the kit are connected to the same network.
+   1. Modify the connection configuration, such as `WIFI_SSID`, `WIFI_PASSWORD`, and `WIFI_SECURITY` macros to match the settings of your Wi-Fi network. Ensure that the device running the HTTP server and the kit are connected to the same network
 
-   2. Modify the `HTTP_SERVER` address to match the IP address of your HTTP server.
+   2. Modify the `HTTP_SERVER` address to match the IP address of your HTTP server
 
-   3. Ensure that the value of the `HTTP_SERVER_PORT` macro is `443`.
+   3. Ensure that the value of the `HTTP_SERVER_PORT` macro is `443`
 
-      > **Note:** If the code example has been configured to work in non-TLS mode, set the value of `HTTP_SERVER_PORT` macro as `8080`.
+      > **Note:** If the code example has been configured to work in non-TLS mode, set the value of `HTTP_SERVER_PORT` macro as `8080`
 
-   4. By default, this code example uses the HTTPS (TLS) protocol. To use the example in HTTP (non-TLS) mode, modify `ENABLE_TLS` to **false** and skip the next step of adding the certificate.
+   4. By default, this code example uses the HTTPS (TLS) protocol. To use the example in HTTP (non-TLS) mode, modify `ENABLE_TLS` to **false** and skip the next step of adding the certificate
 
    5. Add the certificates and key:
 
-      1. Open a CLI terminal.
+      1. Open a CLI terminal
 
-          On Linux and macOS, you can use any terminal application. On Windows, from the Start menu, open **modus-shell** app.
+          On Linux and macOS, you can use any terminal application. On Windows, from the Start menu, open **modus-shell** app
 
-      2. Navigate the terminal to the *\<OTA_HTTPS>/scripts/* directory.
+      2. Navigate the terminal to the *\<OTA_HTTPS>/scripts/* directory
 
       3. Run the *format_cert_key.py* Python script to generate the string format of the *http_ca.crt* file that can be added as a macro. Pass the name of the certificate with the extension as an argument to the Python script:
 
-         > **Note:** For Linux and macOS platforms, use `python3` instead of `python` in the following command.
+         > **Note:** For Linux and macOS platforms, use `python3` instead of `python` in the following command
 
          ```
          python format_cert_key.py <one-or-more-file-name-of-certificate-or-key-with-extension>
@@ -410,13 +409,13 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
          ```
          python format_cert_key.py http_ca.crt
          ```
-      4. Copy the generated string and add it to the `ROOT_CA_CERTIFICATE` macro as per the sample shown.
+      4. Copy the generated string and add it to the `ROOT_CA_CERTIFICATE` macro as per the sample shown
 
-         > **Note:** The local-web-server does not authenticate a client through the certificate; this is the reason why the client certificate and client key are not added here. If you use some other server, which can do client-side authentication, add the *http_client.crt* and *http_client.key* files. Also, set the `USING_CLIENT_CERTIFICATE` and `USING_CLIENT_KEY` macros to value **true**.
+         > **Note:** The local-web-server does not authenticate a client through the certificate; this is the reason why the client certificate and client key are not added here. If you use some other server, which can do client-side authentication, add the *http_client.crt* and *http_client.key* files. Also, set the `USING_CLIENT_CERTIFICATE` and `USING_CLIENT_KEY` macros to value **true**
 
 6. Edit the job document (*\<OTA_HTTPS>/scripts/ota_update.json*):
 
-   1. Modify the value of the variable `Board` to your selected `TARGET` in the following format.
+   1. Modify the value of the variable `Board` to your selected `TARGET` in the following format
 
       ```
       if TARGET=APP_CY8CPROTO-062S2-43439, then Board:"APP_CY8CPROTO_062S2_43439"
@@ -427,31 +426,32 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
       ```
       "Board":"APP_CY8CPROTO_062S2_43439",
       ```
-      > **Note:** Ensure to change the `-` to `_` in the `Board` variable value while copying from the `TARGET` variable.
+      > **Note:** Ensure to change the `-` to `_` in the `Board` variable value while copying from the `TARGET` variable
 
-   2. Modify the value of the `Server` to match the IP address of your HTTP server.
+   2. Modify the value of the `Server` to match the IP address of your HTTP server
 
-   3. Ensure that the value of the `Port` is `443`.
+   3. Ensure that the value of the `Port` is `443`
 
-      > **Note:** If the code example has been configured to work in non-TLS mode, set the value of `Port` as `8080`.
+      > **Note:** If the code example has been configured to work in non-TLS mode, set the value of `Port` as `8080`
 
-   4. Ensure that the value of the `Connection` is `HTTPS`.
+   4. Ensure that the value of the `Connection` is `HTTPS`
 
-      > **Note:** If the code example has been configured to work in non-TLS mode, set the value of `Connection` as `HTTP`.
+      > **Note:** If the code example has been configured to work in non-TLS mode, set the value of `Connection` as `HTTP`
 
 7. Program the board using one of the following:
 
    <details><summary><b>Using Eclipse IDE</b></summary>
 
-      1. Select the application project in the Project Explorer.
+      1. Select the application project in the Project Explorer
 
-      2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program (KitProg3_MiniProg4)**.
+      2. In the **Quick Panel**, scroll down, and click **\<Application Name> Program (KitProg3_MiniProg4)**
    </details>
 
 
    <details><summary><b>In other IDEs</b></summary>
 
    Follow the instructions in your preferred IDE.
+
    </details>
 
 
@@ -468,9 +468,9 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
       ```
    </details>
 
-8. After programming, MCUboot will validate the primary image. After successfully validating the primary image, MCUboot let the CM4/CM7 core run the image from the primary slot. Observe that the user LED blinks at a one second interval. Observe the messages on the UART terminal and wait for the device to make the required connections. Once the HTTP client (device) is connected to the server, it will download the job document (*ota_update.json*) as shown in **Figure 6**.
+8. After programming, MCUboot will validate the primary image. After successfully validating the primary image, MCUboot let the CM4/CM7 core run the image from the primary slot. Observe that the user LED blinks at a one second interval. Observe the messages on the UART terminal and wait for the device to make the required connections. Once the HTTP client (device) is connected to the server, it will download the job document (*ota_update.json*) as shown in **Figure 6**
 
-   **Figure 5** shows the logs of HTTP server response for the job document request from the HTTP client.
+   **Figure 5** shows the logs of HTTP server response for the job document request from the HTTP client
 
    **Figure 5. Response for the job document request**
 
@@ -480,17 +480,17 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
 
    ![](images/connection_http_server.png)
 
-9. The job document (*ota_update.json*) placed in the *\<OTA_HTTPS>/scripts* folder has value of `Version` as **1.0.0**. The OTA update will not happen because the OTA HTTPS application version and available update version are the same.
+9. The job document (*ota_update.json*) placed in the *\<OTA_HTTPS>/scripts* folder has value of `Version` as **1.0.0**. The OTA update will not happen because the OTA HTTPS application version and available update version are the same
 
-10. Modify the value of the `BLINKY_DELAY_MS` macro to **(100)** in the *\<OTA_HTTPS>/source/led_task.c* file and change the application version in the *\<OTA_HTTPS>/Makefile* by setting `APP_VERSION_MINOR` to **1**.
+10. Modify the value of the `BLINKY_DELAY_MS` macro to **(100)** in the *\<OTA_HTTPS>/source/led_task.c* file and change the application version in the *\<OTA_HTTPS>/Makefile* by setting `APP_VERSION_MINOR` to **1**
 
-11. Build the application (**Do not** program it to the kit). This new image will be uploaded to the HTTP server in the following steps to demonstrate the OTA update.
+11. Build the application (**Do not** program it to the kit). This new image will be uploaded to the HTTP server in the following steps to demonstrate the OTA update
 
     <details><summary><b>In Eclipse IDE</b></summary>
 
-      1. Select the application project in the Project Explorer.
+      1. Select the application project in the Project Explorer
 
-      2. In the **Quick Panel**, scroll down, and click **Build \<Application Name> Application**.
+      2. In the **Quick Panel**, scroll down, and click **Build \<Application Name> Application**
     </details>
 
     <details><summary><b>Using CLI</b></summary>
@@ -505,13 +505,13 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
          ```
     </details>
 
-12. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA_HTTPS>/build/\<TARGET>/Debug* and paste it to the *\<OTA_HTTPS>/scripts* directory.
+12. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA_HTTPS>/build/\<TARGET>/Debug* and paste it to the *\<OTA_HTTPS>/scripts* directory
 
-13. Edit the *\<OTA_HTTPS>/scripts/ota_update.json* file to modify the value of `Version` to **1.1.0**.
+13. Edit the *\<OTA_HTTPS>/scripts/ota_update.json* file to modify the value of `Version` to **1.1.0**
 
-    The OTA HTTPS application finds and downloads the updated job document resulting in the available update version which is higher than the OTA HTTPS application version. So, the OTA HTTPS application starts to download the new image as shown in **Figure 8** and places it in the secondary slot. Once the download is completed, a soft reset is issued. Then the MCUboot starts the image upgrade process (swapping the images between the primary and secondary slots after successfully validating the secondary image). This takes approximately 15 to 20 minutes.
+    The OTA HTTPS application finds and downloads the updated job document resulting in the available update version which is higher than the OTA HTTPS application version. So, the OTA HTTPS application starts to download the new image as shown in **Figure 8** and places it in the secondary slot. Once the download is completed, a soft reset is issued. Then the MCUboot starts the image upgrade process (swapping the images between the primary and secondary slots after successfully validating the secondary image). This takes approximately 15 to 20 minutes
 
-    **Figure 7** shows the logs of HTTP server while uploading the new image.
+    **Figure 7** shows the logs of HTTP server while uploading the new image
 
     **Figure 7. Uploading the new image**
 
@@ -521,13 +521,13 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
 
     ![](images/downloading_new_image.png)
 
-    After the image upgrade is completed successfully, MCUboot lets the CM7 core run the new image from the primary slot. Observe that the user LED is now blinking at a 100-millisecond interval and the UART terminal displays the message as shown in **Figure 9**.
+    After the image upgrade is completed successfully, MCUboot lets the CM7 core run the new image from the primary slot. Observe that the user LED is now blinking at a 100-millisecond interval and the UART terminal displays the message as shown in **Figure 9**
 
     **Figure 9. Updated to new image**
 
     ![](images/updated_to_new_image.png)
 
-    To test the revert feature of MCUboot, send a bad image as **v1.2.0** OTA update. The bad image used in this example is an infinite loop. The watchdog timer will reset the bad image and upon reboot, MCUboot will revert the primary image back to **v1.1.0**, the good image.
+    To test the revert feature of MCUboot, send a bad image as **v1.2.0** OTA update. The bad image used in this example is an infinite loop. The watchdog timer will reset the bad image and upon reboot, MCUboot will revert the primary image back to **v1.1.0**, the good image
 
 14. Edit *\<OTA_HTTPS>/Makefile* and add `TEST_REVERT` to the `Defines` variable as shown:
 
@@ -536,25 +536,25 @@ This code example uses a local server to demonstrate the OTA operation over HTTP
       ```
 
 
-    > **Note:** In an overwrite-based upgrade, the secondary image is simply copied to the primary slot after successful validation. There is no way to revert the upgrade if the secondary image is inoperable. `TEST_REVERT` feature is not applicable for overwrite-based upgrade.
+    > **Note:** In an overwrite-based upgrade, the secondary image is simply copied to the primary slot after successful validation. There is no way to revert the upgrade if the secondary image is inoperable. `TEST_REVERT` feature is not applicable for overwrite-based upgrade
 
-    See the [MCUboot basics](https://github.com/Infineon/mtb-example-mcuboot-basic/blob/master/README.md#mcuboot-basics) of the [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-basic) code example for more details about the overwrite-based and swap-based upgrades.
+    See the [MCUboot basics](https://github.com/Infineon/mtb-example-mcuboot-basic/blob/master/README.md#mcuboot-basics) of the [mtb-example-mcuboot-basic](https://github.com/Infineon/mtb-example-mcuboot-basic) code example for more details about the overwrite-based and swap-based upgrades
 
-15. Edit the application version in the *\<OTA_HTTPS>/Makefile* by setting `APP_VERSION_MINOR` to **2**.
+15. Edit the application version in the *\<OTA_HTTPS>/Makefile* by setting `APP_VERSION_MINOR` to **2**
 
-16. Build the application as per **Step 10**.
+16. Build the application as per **Step 10**
 
-17. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA_HTTPS>/build/\<TARGET>/Debug* and paste it into the *\<OTA_HTTPS>/scripts* directory.
+17. After a successful build, copy the *mtb-example-ota-https.bin* file from *\<OTA_HTTPS>/build/\<TARGET>/Debug* and paste it into the *\<OTA_HTTPS>/scripts* directory
 
-18. Edit the *\<OTA_HTTPS>/scripts/ota_update.json* file to modify the value of `Version` to **1.2.0**.
+18. Edit the *\<OTA_HTTPS>/scripts/ota_update.json* file to modify the value of `Version` to **1.2.0**
 
-19. The OTA HTTPS application will now find this new **v1.2.0** image and updates it. After the update, the watchdog timer resets the devices within a few seconds. Upon reset, MCUboot reverts to the **v1.1.0** good image. The UART terminal displays the message as shown in **Figure 10**.
+19. The OTA HTTPS application will now find this new **v1.2.0** image and updates it. After the update, the watchdog timer resets the devices within a few seconds. Upon reset, MCUboot reverts to the **v1.1.0** good image. The UART terminal displays the message as shown in **Figure 10**
 
     **Figure 10. Reverting to good image**
 
     ![](images/reverting_to_good_image.png)
 
-      > **Note:** After the last step is complete, the device will be running the **v1.1.0** good image and the server will still have the **v1.2.0** bad image. Because the version of the image on the server is greater than the version of the image on the device, the device will download again the **v1.2.0** bad image. This causes an infinite upgrade and reverts the cycle. To avoid this scenario, stop the HTTP/HTTPS server after you test the code example. In a production environment, the application is responsible for blacklisting bad image versions and to avoid upgrading to them in the future.
+      > **Note:** After the last step is complete, the device will be running the **v1.1.0** good image and the server will still have the **v1.2.0** bad image. Because the version of the image on the server is greater than the version of the image on the device, the device will download again the **v1.2.0** bad image. This causes an infinite upgrade and reverts the cycle. To avoid this scenario, stop the HTTP/HTTPS server after you test the code example. In a production environment, the application is responsible for blacklisting bad image versions and to avoid upgrading to them in the future
 
 
 ## Debugging
@@ -627,14 +627,14 @@ The *\<OTA_HTTPS>/configs* folder contains other configurations related to the O
 
 File | Description
 :-----|:------
-*ota_app_config.h* | Contains the OTA and Wi-Fi configuration macros such as SSID, password, HTTP server details, certificates, and key.
-*cy_ota_config.h* | Contains the OTA middleware level configuration macros.
-*mbedtls_user_config.h* | Contains the mbedtls configuration macros.
-*COMPONENT_CM7/FreeRTOSConfig.h* | Contains the FreeRTOS configuration macros for XMC7000 family.
-*COMPONENT_CM4/FreeRTOSConfig.h* | Contains the FreeRTOS configuration macros for PSOC&trade; 6 family.
-*COMPONENT_MCUBOOT/flash/cy_ota_flash.c* | Contains OTA flash operation APIs.
-*COMPONENT_MCUBOOT/flash/COMPONENT_OTA_PSOC_062/flash_qspi.c* | Contains QSPI flash related APIs.
-*COMPONENT_MCUBOOT/flash/COMPONENT_OTA_PSOC_062/flash_qspi.h* | Contains the declaration of QSPI flash related APIs.
+*ota_app_config.h* | Contains the OTA and Wi-Fi configuration macros such as SSID, password, HTTP server details, certificates, and key
+*cy_ota_config.h* | Contains the OTA middleware level configuration macros
+*mbedtls_user_config.h* | Contains the mbedtls configuration macros
+*COMPONENT_CM7/FreeRTOSConfig.h* | Contains the FreeRTOS configuration macros for XMC7000 family
+*COMPONENT_CM4/FreeRTOSConfig.h* | Contains the FreeRTOS configuration macros for PSOC&trade; 6 family
+*COMPONENT_MCUBOOT/flash/cy_ota_flash.c* | Contains OTA flash operation APIs
+*COMPONENT_MCUBOOT/flash/COMPONENT_OTA_PSOC_062/flash_qspi.c* | Contains QSPI flash related APIs
+*COMPONENT_MCUBOOT/flash/COMPONENT_OTA_PSOC_062/flash_qspi.h* | Contains the declaration of QSPI flash related APIs
 
 <br>
 
@@ -660,7 +660,7 @@ Currently this code example uses the TLS v1.2. To use the TLS v1.3, uncomment th
 
  Resource  |  Alias/object     |    Purpose
  :-------- | :-------------    | :------------
- UART (HAL)|cy_retarget_io_uart_obj| UART HAL object used by Retarget-IO for the Debug UART port
+ UART (HAL) |cy_retarget_io_uart_obj | UART HAL object used by Retarget-IO for the Debug UART port
  GPIO (HAL)    | CYBSP_USER_LED     | User LED
 
 <br>
@@ -673,10 +673,10 @@ Resources  | Links
 Application notes  | [AN228571](https://www.infineon.com/AN228571) – Getting started with PSOC&trade; 6 MCU on ModusToolbox&trade; <br>  [AN215656](https://www.infineon.com/AN215656) – PSOC&trade; 6 MCU: Dual-CPU system design <br> [AN234334](https://www.infineon.com/dgdl/Infineon-AN234334_Getting_started_with_XMC7000_MCU_on_ModusToolbox_software-ApplicationNotes-v01_00-EN.pdf?fileId=8ac78c8c8412f8d301842d32c5765bfd) – Getting started with XMC7000 MCU on ModusToolbox&trade; <br> [AN234023](https://www.infineon.com/dgdl/Infineon-AN234023-Smart_IO_usage_setup_in_XMC7000_family-ApplicationNotes-v01_00-EN.pdf?fileId=8ac78c8c8412f8d301845123d1704f20) – Smart I/O usage setup in XMC7000 family 
 Code examples  | [Using ModusToolbox&trade;](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub
 Device documentation | [PSOC&trade; 6 MCU datasheets](https://documentation.infineon.com/html/psoc6/bnm1651211483724.html) <br> [PSOC&trade; 6 reference manuals](https://documentation.infineon.com/html/psoc6/zrs1651212645947.html)<br>[XMC7000 MCU datasheets](https://www.infineon.com/cms/en/product/microcontroller/32-bit-industrial-microcontroller-based-on-arm-cortex-m/32-bit-xmc7000-industrial-microcontroller-arm-cortex-m7) <br> [XMC7000 reference manuals](https://www.infineon.com/cms/en/product/microcontroller/32-bit-industrial-microcontroller-based-on-arm-cortex-m/32-bit-xmc7000-industrial-microcontroller-arm-cortex-m7)
-Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board).
-Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSOC&trade; 6 Peripheral Driver Library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware Abstraction Layer (HAL) Library
+Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board)
+Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSOC&trade; 6 Peripheral Driver Library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware Abstraction Layer (HAL) library
 Middleware on GitHub  | [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSOC&trade; 6 MCU middleware<br>[mcu-middleware](https://github.com/Infineon/modustoolbox-software) – Links to all MCU middleware <br> [MCUboot](https://github.com/mcu-tools/mcuboot) – Open-source library enabling the development of secure bootloader applications for 32-bit MCUs <br> [retarget-io](https://github.com/Infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port <br> [ota-update](https://github.com/Infineon/ota-update) – OTA library and docs <br> [wifi-mw-core](https://github.com/Infineon/wifi-mw-core) – Wi-Fi middleware core library and docs <br> [ota-bootloader-abstraction](https://github.com/Infineon/ota-bootloader-abstraction) - OTA MCUboot-based bootloader abstraction <br> [http-client](https://github.com/Infineon/http-client) – HTTP client library and docs
-Tools  | [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use libraries and tools enabling rapid development with Infineon MCUs for applications ranging from wireless and cloud-connected systems, edge AI/ML, embedded sense and control, to wired USB connectivity using PSOC&trade; Industrial/IoT MCUs, AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices, XMC&trade; Industrial MCUs, and EZ-USB&trade;/EZ-PD&trade; wired connectivity controllers. ModusToolbox&trade; incorporates a comprehensive set of BSPs, HAL, libraries, configuration tools, and provides support for industry-standard IDEs to fast-track your embedded application development.
+Tools  | [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use libraries and tools enabling rapid development with Infineon MCUs for applications ranging from wireless and cloud-connected systems, edge AI/ML, embedded sense and control, to wired USB connectivity using PSOC&trade; Industrial/IoT MCUs, AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices, XMC&trade; Industrial MCUs, and EZ-USB&trade;/EZ-PD&trade; wired connectivity controllers. ModusToolbox&trade; incorporates a comprehensive set of BSPs, HAL, libraries, configuration tools, and provides support for industry-standard IDEs to fast-track your embedded application development
 
 <br>
 
@@ -696,7 +696,7 @@ Document title: *CE231585* – *Over-the-air firmware update using HTTPS*
  ------- | ---------------------
  1.0.0   | New code example
  1.1.0   | Updated the configuration file to support MbedTLS v2.22.0
- 2.0.0   | Update to:<br>1. Support anycloud-ota v4.X library. <br>2. Support swap upgrade with MCUboot. <br>3. Support local-web-server instead of mongoose
+ 2.0.0   | Updated to support anycloud-ota v4.X library <br> Updated to support swap upgrade with MCUboot <br> Updated to support local-web-server instead of mongoose
  3.0.0   | Update to support ModusToolbox&trade; software v2.4 and BSP v3.X<br> Added support for CY8CEVAL-062S2-MUR-43439M2 and CY8CEVAL-062S2-LAI-4373M2 kits
  4.0.0   | Updated the example to use the new ota-update v1.0.0 library
  5.0.0   | Updated the example to use the ota-update v1.1.0 library <br> Updated to support ModusToolbox&trade; software v3.0<br> Added support for CY8CPROTO-062S3-4343W kit
@@ -705,11 +705,12 @@ Document title: *CE231585* – *Over-the-air firmware update using HTTPS*
  5.3.0   | Updated to support ModusToolbox&trade; v3.1 and added support for CY8CEVAL-062S2-MUR-4373M2 and CY8CEVAL-062S2-MUR-4373EM2 
  5.4.0   | Added support for CY8CEVAL-062S2-CYW43022CUB
  5.5.0   | Updated to support ModusToolbox&trade; v3.2
- 6.0.0   | Updated to support OTA update middleware v4.0.0<br> Added support for KIT_XMC72_EVK_MUR_43439M2 kit.
+ 6.0.0   | Updated to support OTA update middleware v4.0.0<br> Added support for KIT_XMC72_EVK_MUR_43439M2 kit
  6.1.0   | Updated to support PDL v3.11.0
  6.2.0   | Added support for CY8CEVAL-062S2-CYW955513SDM2WLIPA
  6.3.0   | Updated to use v2.X of wifi-core-freertos-lwip-mbedtls.mtb; Disabled D-cache for XMC7000 based BSPs
  6.4.0   | Enabled D-cache support for XMC7000 devices
+ 6.5.0   | Enabled MBEDTLS hardware acceleration for Arm&reg; and IAR toolchains for XMC7000 devices
 <br>
 
 
@@ -717,10 +718,11 @@ All referenced product or service names and trademarks are the property of their
 
 The Bluetooth&reg; word mark and logos are registered trademarks owned by Bluetooth SIG, Inc., and any use of such marks by Infineon is under license.
 
+PSOC&trade;, formerly known as PSoC&trade;, is a trademark of Infineon Technologies. Any references to PSoC&trade; in this document or others shall be deemed to refer to PSOC&trade;.
 
 ---------------------------------------------------------
 
-© Cypress Semiconductor Corporation, 2020-2024. This document is the property of Cypress Semiconductor Corporation, an Infineon Technologies company, and its affiliates ("Cypress").  This document, including any software or firmware included or referenced in this document ("Software"), is owned by Cypress under the intellectual property laws and treaties of the United States and other countries worldwide.  Cypress reserves all rights under such laws and treaties and does not, except as specifically stated in this paragraph, grant any license under its patents, copyrights, trademarks, or other intellectual property rights.  If the Software is not accompanied by a license agreement and you do not otherwise have a written agreement with Cypress governing the use of the Software, then Cypress hereby grants you a personal, non-exclusive, nontransferable license (without the right to sublicense) (1) under its copyright rights in the Software (a) for Software provided in source code form, to modify and reproduce the Software solely for use with Cypress hardware products, only internally within your organization, and (b) to distribute the Software in binary code form externally to end users (either directly or indirectly through resellers and distributors), solely for use on Cypress hardware product units, and (2) under those claims of Cypress's patents that are infringed by the Software (as provided by Cypress, unmodified) to make, use, distribute, and import the Software solely for use with Cypress hardware products.  Any other use, reproduction, modification, translation, or compilation of the Software is prohibited.
+© Cypress Semiconductor Corporation, 2021-2025. This document is the property of Cypress Semiconductor Corporation, an Infineon Technologies company, and its affiliates ("Cypress").  This document, including any software or firmware included or referenced in this document ("Software"), is owned by Cypress under the intellectual property laws and treaties of the United States and other countries worldwide.  Cypress reserves all rights under such laws and treaties and does not, except as specifically stated in this paragraph, grant any license under its patents, copyrights, trademarks, or other intellectual property rights.  If the Software is not accompanied by a license agreement and you do not otherwise have a written agreement with Cypress governing the use of the Software, then Cypress hereby grants you a personal, non-exclusive, nontransferable license (without the right to sublicense) (1) under its copyright rights in the Software (a) for Software provided in source code form, to modify and reproduce the Software solely for use with Cypress hardware products, only internally within your organization, and (b) to distribute the Software in binary code form externally to end users (either directly or indirectly through resellers and distributors), solely for use on Cypress hardware product units, and (2) under those claims of Cypress's patents that are infringed by the Software (as provided by Cypress, unmodified) to make, use, distribute, and import the Software solely for use with Cypress hardware products.  Any other use, reproduction, modification, translation, or compilation of the Software is prohibited.
 <br>
 TO THE EXTENT PERMITTED BY APPLICABLE LAW, CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH REGARD TO THIS DOCUMENT OR ANY SOFTWARE OR ACCOMPANYING HARDWARE, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  No computing device can be absolutely secure.  Therefore, despite security measures implemented in Cypress hardware or software products, Cypress shall have no liability arising out of any security breach, such as unauthorized access to or use of a Cypress product. CYPRESS DOES NOT REPRESENT, WARRANT, OR GUARANTEE THAT CYPRESS PRODUCTS, OR SYSTEMS CREATED USING CYPRESS PRODUCTS, WILL BE FREE FROM CORRUPTION, ATTACK, VIRUSES, INTERFERENCE, HACKING, DATA LOSS OR THEFT, OR OTHER SECURITY INTRUSION (collectively, "Security Breach").  Cypress disclaims any liability relating to any Security Breach, and you shall and hereby do release Cypress from any claim, damage, or other liability arising from any Security Breach.  In addition, the products described in these materials may contain design defects or errors known as errata which may cause the product to deviate from published specifications. To the extent permitted by applicable law, Cypress reserves the right to make changes to this document without further notice. Cypress does not assume any liability arising out of the application or use of any product or circuit described in this document. Any information provided in this document, including any sample design information or programming code, is provided only for reference purposes.  It is the responsibility of the user of this document to properly design, program, and test the functionality and safety of any application made of this information and any resulting product.  "High-Risk Device" means any device or system whose failure could cause personal injury, death, or property damage.  Examples of High-Risk Devices are weapons, nuclear installations, surgical implants, and other medical devices.  "Critical Component" means any component of a High-Risk Device whose failure to perform can be reasonably expected to cause, directly or indirectly, the failure of the High-Risk Device, or to affect its safety or effectiveness.  Cypress is not liable, in whole or in part, and you shall and hereby do release Cypress from any claim, damage, or other liability arising from any use of a Cypress product as a Critical Component in a High-Risk Device. You shall indemnify and hold Cypress, including its affiliates, and its directors, officers, employees, agents, distributors, and assigns harmless from and against all claims, costs, damages, and expenses, arising out of any claim, including claims for product liability, personal injury or death, or property damage arising from any use of a Cypress product as a Critical Component in a High-Risk Device. Cypress products are not intended or authorized for use as a Critical Component in any High-Risk Device except to the limited extent that (i) Cypress's published data sheet for the product explicitly states Cypress has qualified the product for use in a specific High-Risk Device, or (ii) Cypress has given you advance written authorization to use the product as a Critical Component in the specific High-Risk Device and you have signed a separate indemnification agreement.
 <br>

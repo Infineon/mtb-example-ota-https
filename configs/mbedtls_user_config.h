@@ -7,7 +7,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2024, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2024-2025, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -999,15 +999,6 @@
  * is only used when device is acting as a server. for client, version negotiation is supported.
  */
 // #define FORCE_TLS_VERSION MBEDTLS_SSL_VERSION_TLS1_3
-
-#if !defined (CY_DISABLE_XMC7000_DATA_CACHE) && defined (__DCACHE_PRESENT) && (__DCACHE_PRESENT == 1U)
-/*
- * Disable MBEDTLS hardware acceleration for ARM and IAR toolchains.
- */
-#if defined(__ARMCC_VERSION) || defined(__IAR_SYSTEMS_ICC__)
-#define DISABLE_MBEDTLS_ACCELERATION
-#endif
-#endif
 
 /**
  * \def Enable alternate crypto implementations to use the hardware
